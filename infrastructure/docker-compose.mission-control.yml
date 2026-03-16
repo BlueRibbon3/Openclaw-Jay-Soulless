@@ -1,0 +1,12 @@
+services:
+  mission-control:
+    build:
+      context: .
+    ports:
+      - "0.0.0.0:18790:18790"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    environment:
+      - MC_DB_PATH=/data/mc.db
+      - MC_STATIC_PATH=/app/static
