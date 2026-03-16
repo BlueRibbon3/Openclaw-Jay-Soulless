@@ -1,0 +1,17 @@
+.env
+*.env
+**/.env
+clawdbot.json
+models.json
+*.db
+*.sqlite
+lcm.db
+sessions.json
+data/credentials/
+data/identity/
+data/devices/
+data/browser/
+data/update-check.json
+__pycache__/
+*.pyc
+.DS_Store
