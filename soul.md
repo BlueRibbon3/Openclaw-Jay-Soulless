@@ -406,9 +406,9 @@ Purpose: Keep the door open when a prospect has gone quiet or shown low engageme
 *Generated from this document — do not edit directly.*
 
 - [ ] `orchestrator-system-prompt.md`
-- [ ] `system-prompt-bdr.md`
-- [ ] `system-prompt-ae.md`
-- [ ] `system-prompt-partner.md`
-- [ ] `system-prompt-hiring.md`
-- [ ] `system-prompt-recruiter.md`
+- [x] `system-prompt-bdr.md`
+- [x] `system-prompt-ae.md` (split: ae-industry + ae-geography)
+- [x] `system-prompt-partner.md`
+- [x] `system-prompt-hiring.md`
+- [x] `system-prompt-recruiter.md`
 - [ ] `orchestrator-routing-rules.md`
