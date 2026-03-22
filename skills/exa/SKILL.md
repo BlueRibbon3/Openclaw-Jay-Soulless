@@ -93,3 +93,48 @@ Always extract:
 - Executive signals (recent statements, LinkedIn posts, press)
 - Competitive signals (what vendors are mentioned, recent wins/losses)
 - Timing signals (mandated projects, regulatory changes, new executive hires)
+
+## Signal Cards — Required Output After Every Research Run
+
+After completing research, produce signal cards using the framework at `/root/clawd/memory/signal-quality-framework-v1.md`.
+
+Read the framework before producing cards. One card per signal found.
+
+**Rules:**
+- Minimum 3 cards per run, maximum 10
+- Order cards by composite_score descending — highest first
+- If fewer than 3 signals found, flag: `⚠ Low signal density — only N signals found`
+- Do not interpret signals in the card — description is facts only
+- Calculate composite_score = timeliness_score × financial_score × personal_score
+
+**Output structure — append after the research brief:**
+```
+## Signal Cards
+
+### SIG-001
+signal_type: [type]
+description: [1-2 sentences — what was found]
+source_url: [URL]
+source_type: [producer type]
+published_date: [YYYY-MM-DD]
+days_since_published: [integer]
+timeliness: [Hot/Current/Stale/Historical]
+timeliness_score: [1.5/1.2/0.8/0.5]
+prospect_mentioned_by_name: [yes/no]
+exec_mentioned_by_name: [yes/no]
+financially_material: [yes/no/unclear]
+financial_score: [1.5/1.0/0.5]
+personal_relevance: [Exec named/Prospect named/Neither]
+personal_score: [1.5/1.2/0.8]
+composite_score: [calculated]
+research_purpose: [outreach_trigger/pov_research/account_background/competitive_context]
+
+jay_validation_score: [blank]
+validation_delta: [blank]
+outreach_utility: [blank]
+pov_utility: [blank]
+credibility: [blank]
+jay_notes: [blank]
+```
+
+Repeat for each signal found, incrementing signal_id.
