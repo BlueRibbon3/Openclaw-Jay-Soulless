@@ -10,519 +10,106 @@
   :root {
     --ink: #1a1a18;
     --paper: #f5f2eb;
-    --cream: #ede9de;
     --gold: #c4933f;
     --gold-light: #e8c87a;
     --rust: #8b3a2a;
-    --sage: #4a5e4a;
     --muted: #6b6858;
     --border: #d4cfc0;
     --serif: 'Playfair Display', Georgia, serif;
     --sans: 'DM Sans', system-ui, sans-serif;
     --mono: 'DM Mono', monospace;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-weight: 300;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Texture overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
-
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
   .wrap { position: relative; z-index: 1; }
 
-  /* ── Profile selection screen ── */
-  #screen-profile {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 24px;
-  }
-
-  .masthead {
-    text-align: center;
-    margin-bottom: 56px;
-  }
-
-  .masthead-rule {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-
-  .masthead-rule::before,
-  .masthead-rule::after {
-    content: '';
-    flex: 1;
-    max-width: 80px;
-    height: 1px;
-    background: var(--gold);
-  }
-
-  .masthead-icon {
-    font-size: 0.7rem;
-    color: var(--gold);
-    letter-spacing: 0.2em;
-    font-family: var(--mono);
-    text-transform: uppercase;
-  }
-
-  .masthead h1 {
-    font-family: var(--serif);
-    font-size: clamp(2.4rem, 6vw, 4rem);
-    font-weight: 400;
-    color: var(--ink);
-    line-height: 1.1;
-    margin-bottom: 16px;
-  }
-
-  .masthead h1 em {
-    font-style: italic;
-    color: var(--gold);
-  }
-
-  .masthead p {
-    font-size: 1rem;
-    color: var(--muted);
-    max-width: 480px;
-    margin: 0 auto;
-    line-height: 1.7;
-  }
-
-  .profiles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    width: 100%;
-    max-width: 900px;
-    margin-bottom: 32px;
-  }
-
-  .profile-card {
-    background: white;
-    border: 1.5px solid var(--border);
-    border-radius: 2px;
-    padding: 28px 24px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .profile-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gold);
-    transform: scaleX(0);
-    transition: transform 0.2s;
-    transform-origin: left;
-  }
-
-  .profile-card:hover {
-    border-color: var(--gold);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  }
-
-  .profile-card:hover::before { transform: scaleX(1); }
+  /* Profile screen */
+  #screen-profile { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; }
+  .masthead { text-align: center; margin-bottom: 56px; }
+  .masthead-rule { display: flex; align-items: center; gap: 16px; justify-content: center; margin-bottom: 20px; }
+  .masthead-rule::before, .masthead-rule::after { content: ''; flex: 1; max-width: 80px; height: 1px; background: var(--gold); }
+  .masthead-icon { font-size: 0.7rem; color: var(--gold); letter-spacing: 0.2em; font-family: var(--mono); text-transform: uppercase; }
+  .masthead h1 { font-family: var(--serif); font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 400; line-height: 1.1; margin-bottom: 16px; }
+  .masthead h1 em { font-style: italic; color: var(--gold); }
+  .masthead p { font-size: 1rem; color: var(--muted); max-width: 480px; margin: 0 auto; line-height: 1.7; }
+  .profiles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; width: 100%; max-width: 900px; margin-bottom: 32px; }
+  .profile-card { background: white; border: 1.5px solid var(--border); border-radius: 2px; padding: 28px 24px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+  .profile-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gold); transform: scaleX(0); transition: transform 0.2s; transform-origin: left; }
+  .profile-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .profile-card:hover::before, .profile-card.selected::before { transform: scaleX(1); }
   .profile-card.selected { border-color: var(--gold); background: #fffdf6; }
-  .profile-card.selected::before { transform: scaleX(1); }
-
-  .profile-name {
-    font-family: var(--serif);
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--ink);
-    margin-bottom: 4px;
-  }
-
-  .profile-role {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    color: var(--gold);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .profile-desc {
-    font-size: 0.82rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  .profile-years {
-    display: inline-block;
-    margin-top: 14px;
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    padding: 2px 8px;
-    border-radius: 2px;
-  }
-
-  .start-btn {
-    background: var(--ink);
-    color: var(--paper);
-    border: none;
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 14px 40px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border-radius: 2px;
-  }
-
+  .profile-name { font-family: var(--serif); font-size: 1.3rem; font-weight: 600; margin-bottom: 4px; }
+  .profile-role { font-family: var(--mono); font-size: 0.62rem; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+  .profile-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+  .profile-years { display: inline-block; margin-top: 14px; font-family: var(--mono); font-size: 0.62rem; color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 2px; }
+  .start-btn { background: var(--ink); color: var(--paper); border: none; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 40px; cursor: pointer; transition: all 0.2s; border-radius: 2px; }
   .start-btn:hover { background: var(--gold); color: var(--ink); }
   .start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* ── Interview screen ── */
-  #screen-interview {
-    display: none;
-    min-height: 100vh;
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
-
-  .interview-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 48px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .interview-title {
-    font-family: var(--serif);
-    font-size: 1.1rem;
-    font-style: italic;
-    color: var(--muted);
-  }
-
-  .progress-track {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-
-  .progress-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: background 0.3s;
-  }
-
+  /* Interview screen */
+  #screen-interview { display: none; min-height: 100vh; max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+  .interview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 48px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .interview-title { font-family: var(--serif); font-size: 1.1rem; font-style: italic; color: var(--muted); }
+  .progress-track { display: flex; gap: 6px; }
+  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
   .progress-dot.done { background: var(--gold); }
   .progress-dot.active { background: var(--ink); }
-
-  .section-label {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    color: var(--gold);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .section-title {
-    font-family: var(--serif);
-    font-size: 1.8rem;
-    font-weight: 400;
-    color: var(--ink);
-    line-height: 1.2;
-    margin-bottom: 24px;
-  }
-
-  /* Chat area */
-  .chat-area {
-    min-height: 320px;
-    margin-bottom: 24px;
-  }
-
-  .message {
-    margin-bottom: 20px;
-    animation: fadeUp 0.3s ease;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .message-agent {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
-
-  .agent-avatar {
-    width: 32px;
-    height: 32px;
-    background: var(--ink);
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--serif);
-    font-size: 0.75rem;
-    color: var(--gold);
-    font-style: italic;
-    margin-top: 2px;
-  }
-
-  .message-bubble {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 2px 12px 12px 12px;
-    padding: 16px 20px;
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: var(--ink);
-    max-width: 580px;
-  }
-
-  .message-user {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .message-user .message-bubble {
-    background: var(--ink);
-    color: var(--paper);
-    border-color: var(--ink);
-    border-radius: 12px 2px 12px 12px;
-    font-weight: 300;
-  }
-
-  .typing-indicator {
-    display: flex;
-    gap: 4px;
-    padding: 8px 4px;
-  }
-
-  .typing-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--muted);
-    border-radius: 50%;
-    animation: typing 1.2s infinite;
-  }
-
+  .chat-area { min-height: 320px; margin-bottom: 24px; }
+  .message { margin-bottom: 20px; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .message-agent { display: flex; gap: 14px; align-items: flex-start; }
+  .agent-avatar { width: 32px; height: 32px; background: var(--ink); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 0.75rem; color: var(--gold); font-style: italic; margin-top: 2px; }
+  .message-bubble { background: white; border: 1px solid var(--border); border-radius: 2px 12px 12px 12px; padding: 16px 20px; font-size: 0.95rem; line-height: 1.7; max-width: 580px; }
+  .message-user { display: flex; justify-content: flex-end; }
+  .message-user .message-bubble { background: var(--ink); color: var(--paper); border-color: var(--ink); border-radius: 12px 2px 12px 12px; font-weight: 300; }
+  .typing-indicator { display: flex; gap: 4px; padding: 8px 4px; }
+  .typing-dot { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: typing 1.2s infinite; }
   .typing-dot:nth-child(2) { animation-delay: 0.2s; }
   .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-6px); opacity: 1; } }
 
-  @keyframes typing {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-6px); opacity: 1; }
-  }
-
-  /* Input area */
-  .input-area {
-    position: relative;
-    border: 1.5px solid var(--border);
-    border-radius: 4px;
-    background: white;
-    transition: border-color 0.2s;
-  }
-
+  /* Input */
+  .input-area { position: relative; border: 1.5px solid var(--border); border-radius: 4px; background: white; transition: border-color 0.2s; }
   .input-area:focus-within { border-color: var(--ink); }
-
-  textarea {
-    width: 100%;
-    min-height: 100px;
-    padding: 16px 20px;
-    padding-bottom: 48px;
-    font-family: var(--sans);
-    font-size: 0.95rem;
-    font-weight: 300;
-    color: var(--ink);
-    background: transparent;
-    border: none;
-    outline: none;
-    resize: none;
-    line-height: 1.6;
-  }
-
+  .input-area.recording { border-color: var(--rust); }
+  textarea { width: 100%; min-height: 100px; padding: 16px 20px 48px; font-family: var(--sans); font-size: 0.95rem; font-weight: 300; color: var(--ink); background: transparent; border: none; outline: none; resize: none; line-height: 1.6; }
   textarea::placeholder { color: var(--muted); }
-
-  .input-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    border-top: 1px solid var(--border);
-  }
-
-  .input-hint {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-  }
-
-  .send-btn {
-    background: var(--ink);
-    color: var(--paper);
-    border: none;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 7px 16px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: background 0.15s;
-  }
-
+  .input-footer { position: absolute; bottom: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--border); }
+  .input-hint { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.06em; flex: 1; }
+  .mic-btn { background: none; border: 1.5px solid var(--border); color: var(--muted); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 13px; flex-shrink: 0; }
+  .mic-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .mic-btn.listening { background: var(--rust); border-color: var(--rust); color: white; animation: pulse-mic 1s ease-in-out infinite; }
+  @keyframes pulse-mic { 0%, 100% { box-shadow: 0 0 0 0 rgba(139,58,42,0.4); } 50% { box-shadow: 0 0 0 8px rgba(139,58,42,0); } }
+  .send-btn { background: var(--ink); color: var(--paper); border: none; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 16px; cursor: pointer; border-radius: 2px; transition: background 0.15s; flex-shrink: 0; }
   .send-btn:hover { background: var(--gold); color: var(--ink); }
   .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* ── Output screen ── */
-  #screen-output {
-    display: none;
-    min-height: 100vh;
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
-
-  .output-header {
-    text-align: center;
-    margin-bottom: 48px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .output-header h2 {
-    font-family: var(--serif);
-    font-size: 2.4rem;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-
-  .output-header p {
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
-
-  .soul-output {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 40px 48px;
-    font-family: var(--sans);
-    font-size: 0.9rem;
-    line-height: 1.8;
-    color: var(--ink);
-    white-space: pre-wrap;
-    margin-bottom: 32px;
-  }
-
-  .output-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-  }
-
-  .btn-outline {
-    background: none;
-    border: 1.5px solid var(--ink);
-    color: var(--ink);
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 12px 28px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-  }
-
+  /* Output screen */
+  #screen-output { display: none; min-height: 100vh; max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+  .output-header { text-align: center; margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .output-header h2 { font-family: var(--serif); font-size: 2.4rem; font-weight: 400; margin-bottom: 8px; }
+  .output-header p { color: var(--muted); font-size: 0.9rem; }
+  .soul-output { background: white; border: 1px solid var(--border); border-radius: 4px; padding: 40px 48px; font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap; margin-bottom: 32px; }
+  .output-actions { display: flex; gap: 12px; justify-content: center; }
+  .btn-outline { background: none; border: 1.5px solid var(--ink); color: var(--ink); font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 28px; cursor: pointer; border-radius: 2px; transition: all 0.15s; }
   .btn-outline:hover { background: var(--ink); color: var(--paper); }
-
-  .btn-gold {
-    background: var(--gold);
-    border: none;
-    color: var(--ink);
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 12px 28px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-    font-weight: 500;
-  }
-
+  .btn-gold { background: var(--gold); border: none; color: var(--ink); font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 28px; cursor: pointer; border-radius: 2px; font-weight: 500; }
   .btn-gold:hover { background: var(--gold-light); }
-
-  /* Loading state */
-  .loading-bar {
-    height: 2px;
-    background: linear-gradient(90deg, var(--gold), var(--rust), var(--gold));
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 2px;
-    margin-bottom: 24px;
-    display: none;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
+  .loading-bar { height: 2px; background: linear-gradient(90deg, var(--gold), var(--rust), var(--gold)); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 2px; margin-bottom: 24px; display: none; }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
   .loading-bar.active { display: block; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<!-- ── Screen 1: Profile Selection ── -->
 <div id="screen-profile">
   <div class="masthead">
-    <div class="masthead-rule">
-      <span class="masthead-icon">◆ Soul Builder ◆</span>
-    </div>
+    <div class="masthead-rule"><span class="masthead-icon">◆ Soul Builder ◆</span></div>
     <h1>Who are you<br>as a <em>seller?</em></h1>
     <p>A 60-minute interview that turns your experience, stories, and instincts into a personalised sales identity — the foundation your AI agent is built on.</p>
   </div>
-
   <div class="profiles-grid">
     <div class="profile-card" data-profile="charlie" onclick="selectProfile(this)">
       <div class="profile-name">Charlie Challenger</div>
@@ -549,15 +136,13 @@
       <div class="profile-years">10+ years</div>
     </div>
   </div>
-
   <button class="start-btn" id="start-btn" disabled onclick="startInterview()">Begin Interview →</button>
 </div>
 
-<!-- ── Screen 2: Interview ── -->
 <div id="screen-interview">
   <div class="interview-header">
     <div class="interview-title" id="interview-section-label">Section 1 — Identity</div>
-    <div class="progress-track" id="progress-track">
+    <div class="progress-track">
       <div class="progress-dot active"></div>
       <div class="progress-dot"></div>
       <div class="progress-dot"></div>
@@ -566,21 +151,18 @@
       <div class="progress-dot"></div>
     </div>
   </div>
-
   <div class="loading-bar" id="loading-bar"></div>
-
   <div class="chat-area" id="chat-area"></div>
-
-  <div class="input-area">
-    <textarea id="user-input" placeholder="Tell your story..." onkeydown="handleKey(event)"></textarea>
+  <div class="input-area" id="input-area">
+    <textarea id="user-input" placeholder="Speak or type your answer..." onkeydown="handleKey(event)"></textarea>
     <div class="input-footer">
-      <span class="input-hint">Shift + Enter for new line · Enter to send</span>
+      <span class="input-hint">🎤 tap mic to speak · Enter to send</span>
+      <button class="mic-btn" id="mic-btn" onclick="toggleVoice()" title="Speak your answer">🎤</button>
       <button class="send-btn" id="send-btn" onclick="sendMessage()">Send →</button>
     </div>
   </div>
 </div>
 
-<!-- ── Screen 3: Output ── -->
 <div id="screen-output">
   <div class="output-header">
     <h2>Your Soul.md</h2>
@@ -596,22 +178,21 @@
 </div>
 
 </div>
-
 <script>
 const SECTIONS = [
-  { label: 'Section 1 — Identity', title: 'Who you are as a seller' },
-  { label: 'Section 2 — Opening', title: 'How you open a conversation' },
-  { label: 'Section 3 — Discovery', title: 'How you find the real problem' },
-  { label: 'Section 4 — Qualification', title: 'How you protect your time' },
-  { label: 'Section 5 — Communication', title: 'How you make things land' },
-  { label: 'Section 6 — The POV', title: 'How you earn the right to a view' },
+  { label: 'Section 1 — Identity' },
+  { label: 'Section 2 — Opening' },
+  { label: 'Section 3 — Discovery' },
+  { label: 'Section 4 — Qualification' },
+  { label: 'Section 5 — Communication' },
+  { label: 'Section 6 — The POV' },
 ];
 
 const PROFILE_CONTEXTS = {
-  charlie: "The seller is early in their career (1-3 years). They have energy and drive but are still building their methodology. Ask foundational questions. Help them articulate instincts they have but haven't named yet. Be encouraging but rigorous.",
-  dan: "The seller is mid-career (3-7 years) with a developing methodology. They know what works but want to sharpen it. Probe for the principles behind their habits. Push for specificity.",
-  cathy: "The seller comes from a consulting or advisory background (5-10 years). Strong on discovery and relationships, developing their outbound motion. Probe for how they translate consultative instincts into sales contexts.",
-  jay: "The seller is senior (10+ years) with a well-developed methodology. They need codification more than education. Ask for the stories behind the principles. Assume sophistication. Push for depth not breadth."
+  charlie: "Early career seller (1-3 years). Building methodology. Ask foundational questions. Help them articulate instincts they have but haven't named. Encouraging but rigorous.",
+  dan: "Mid-career seller (3-7 years). Developing methodology. Probe for principles behind their habits. Push for specificity.",
+  cathy: "Consulting or advisory background (5-10 years). Strong on discovery and relationships, developing outbound motion. Probe how consultative instincts translate to sales.",
+  jay: "Senior seller (10+ years). Well-developed methodology needs codification. Ask for stories behind principles. Assume sophistication. Push for depth."
 };
 
 const OPENING_QUESTIONS = {
@@ -625,7 +206,8 @@ let selectedProfile = null;
 let conversationHistory = [];
 let currentSection = 0;
 let sectionTurns = 0;
-let soulData = {};
+let recognition = null;
+let isListening = false;
 
 function selectProfile(card) {
   document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
@@ -641,26 +223,70 @@ function startInterview() {
   const opening = OPENING_QUESTIONS[selectedProfile];
   addAgentMessage(opening);
   conversationHistory.push({ role: 'assistant', content: opening });
+  initVoice();
+}
+
+function initVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('mic-btn');
+  if (!SR) { if (btn) btn.style.display = 'none'; return; }
+  recognition = new SR();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-AU';
+  let finalTranscript = '';
+  recognition.onstart = () => {
+    isListening = true;
+    finalTranscript = document.getElementById('user-input').value;
+    btn.classList.add('listening');
+    btn.textContent = '⏹';
+    document.getElementById('input-area').classList.add('recording');
+  };
+  recognition.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    document.getElementById('user-input').value = finalTranscript + interim;
+  };
+  recognition.onend = () => {
+    isListening = false;
+    btn.classList.remove('listening');
+    btn.textContent = '🎤';
+    document.getElementById('input-area').classList.remove('recording');
+    document.getElementById('user-input').value = document.getElementById('user-input').value.trim();
+  };
+  recognition.onerror = (e) => {
+    isListening = false;
+    btn.classList.remove('listening');
+    btn.textContent = '🎤';
+    document.getElementById('input-area').classList.remove('recording');
+    if (e.error === 'not-allowed') alert('Microphone access denied. Please allow microphone access in your browser settings.');
+  };
+}
+
+function toggleVoice() {
+  if (!recognition) return;
+  if (isListening) recognition.stop();
+  else { document.getElementById('user-input').value = ''; recognition.start(); }
 }
 
 function updateProgress() {
-  const dots = document.querySelectorAll('.progress-dot');
-  dots.forEach((dot, i) => {
+  document.querySelectorAll('.progress-dot').forEach((dot, i) => {
     dot.classList.remove('active', 'done');
     if (i < currentSection) dot.classList.add('done');
     if (i === currentSection) dot.classList.add('active');
   });
-  document.getElementById('interview-section-label').textContent = SECTIONS[currentSection].label;
+  const label = SECTIONS[Math.min(currentSection, SECTIONS.length - 1)];
+  document.getElementById('interview-section-label').textContent = label.label;
 }
 
 function addAgentMessage(text) {
   const area = document.getElementById('chat-area');
   const msg = document.createElement('div');
   msg.className = 'message message-agent';
-  msg.innerHTML = `
-    <div class="agent-avatar">S</div>
-    <div class="message-bubble">${text.replace(/\n/g, '<br>')}</div>
-  `;
+  msg.innerHTML = `<div class="agent-avatar">S</div><div class="message-bubble">${text.replace(/\n/g,'<br>')}</div>`;
   area.appendChild(msg);
   area.scrollTop = area.scrollHeight;
 }
@@ -669,27 +295,18 @@ function addUserMessage(text) {
   const area = document.getElementById('chat-area');
   const msg = document.createElement('div');
   msg.className = 'message message-user';
-  msg.innerHTML = `<div class="message-bubble">${text.replace(/\n/g, '<br>')}</div>`;
+  msg.innerHTML = `<div class="message-bubble">${text.replace(/\n/g,'<br>')}</div>`;
   area.appendChild(msg);
   area.scrollTop = area.scrollHeight;
 }
 
 function showTyping() {
   const area = document.getElementById('chat-area');
-  const typing = document.createElement('div');
-  typing.className = 'message message-agent';
-  typing.id = 'typing-indicator';
-  typing.innerHTML = `
-    <div class="agent-avatar">S</div>
-    <div class="message-bubble">
-      <div class="typing-indicator">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    </div>
-  `;
-  area.appendChild(typing);
+  const t = document.createElement('div');
+  t.className = 'message message-agent';
+  t.id = 'typing-indicator';
+  t.innerHTML = `<div class="agent-avatar">S</div><div class="message-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  area.appendChild(t);
   area.scrollTop = area.scrollHeight;
 }
 
@@ -699,179 +316,107 @@ function removeTyping() {
 }
 
 function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
 async function sendMessage() {
   const input = document.getElementById('user-input');
   const text = input.value.trim();
   if (!text) return;
-
+  if (isListening && recognition) recognition.stop();
   input.value = '';
   document.getElementById('send-btn').disabled = true;
   addUserMessage(text);
-
   conversationHistory.push({ role: 'user', content: text });
   sectionTurns++;
-
   showTyping();
   document.getElementById('loading-bar').classList.add('active');
-
   try {
-    const systemPrompt = buildSystemPrompt();
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        system: systemPrompt,
+        system: buildSystemPrompt(),
         messages: conversationHistory
       })
     });
-
-    const data = await response.json();
+    const data = await res.json();
     const reply = data.content[0].text;
-
     removeTyping();
     document.getElementById('loading-bar').classList.remove('active');
-
-    // Check if we should move to next section
     if (reply.includes('[SECTION_COMPLETE]')) {
-      const cleanReply = reply.replace('[SECTION_COMPLETE]', '').trim();
-      addAgentMessage(cleanReply);
-      conversationHistory.push({ role: 'assistant', content: cleanReply });
-      await moveToNextSection();
+      const clean = reply.replace('[SECTION_COMPLETE]', '').trim();
+      addAgentMessage(clean);
+      conversationHistory.push({ role: 'assistant', content: clean });
+      currentSection++;
+      sectionTurns = 0;
+      if (currentSection < SECTIONS.length) updateProgress();
+      else await generateSoulMd();
     } else if (reply.includes('[INTERVIEW_COMPLETE]')) {
-      const cleanReply = reply.replace('[INTERVIEW_COMPLETE]', '').trim();
-      addAgentMessage(cleanReply);
-      conversationHistory.push({ role: 'assistant', content: cleanReply });
+      const clean = reply.replace('[INTERVIEW_COMPLETE]', '').trim();
+      addAgentMessage(clean);
+      conversationHistory.push({ role: 'assistant', content: clean });
       await generateSoulMd();
     } else {
       addAgentMessage(reply);
       conversationHistory.push({ role: 'assistant', content: reply });
     }
-
   } catch(e) {
     removeTyping();
     document.getElementById('loading-bar').classList.remove('active');
     addAgentMessage('Something went wrong. Please try again.');
   }
-
   document.getElementById('send-btn').disabled = false;
   document.getElementById('user-input').focus();
 }
 
 function buildSystemPrompt() {
-  const profileCtx = PROFILE_CONTEXTS[selectedProfile];
-  const section = SECTIONS[currentSection];
+  const section = SECTIONS[Math.min(currentSection, SECTIONS.length - 1)];
+  return `You are Soul Builder — an interviewer who helps sellers articulate their sales identity through conversation. Draw out stories, extract principles, play them back for confirmation.
 
-  return `You are Soul Builder — an interviewer who helps sellers articulate their sales methodology, instincts, and identity through conversation. Your job is to draw out stories, extract principles, and play them back for confirmation.
+PROFILE: ${PROFILE_CONTEXTS[selectedProfile]}
+CURRENT SECTION: ${section.label} · TURNS: ${sectionTurns}
 
-PROFILE CONTEXT: ${profileCtx}
+INTERVIEW RULES:
+- One question at a time. Never ask two questions in one message.
+- After a story: "What I'm hearing is that you [principle] — is that right?"
+- Push for specificity. Probe vague answers once before moving on.
+- 2-4 sentences max per response unless playing back.
+- Use the seller's language. Never introduce sales jargon or vendor names.
+- Never tell them what good looks like — draw it out.
 
-CURRENT SECTION: ${section.label} — ${section.title}
-TURNS IN THIS SECTION: ${sectionTurns}
+SECTION FOCUS:
+1 Identity: Core selling identity, what drives them, a defining story.
+2 Opening: Their word-for-word first-call approach, upfront contract.
+3 Discovery: How they find the real problem, question approach, L1/L2/L3.
+4 Qualification: How they protect their time, walk-away triggers.
+5 Communication: Language discipline, translation instinct, what they never do.
+6 POV: How they build a point of view, what makes it land.
 
-YOUR INTERVIEW STYLE:
-- Ask one question at a time. Never ask multiple questions in a single message.
-- Lead with curiosity. Listen for the principle behind the story.
-- After a story, extract what you heard: "What I'm hearing is that you [principle] — is that right?"
-- Push for specificity. "Nearly every call" is more useful than "sometimes".
-- If the answer is vague, probe: "Can you give me a specific example?"
-- Keep your responses concise — 2-4 sentences maximum unless playing back.
-- Mirror the seller's language. Use their words, not yours.
-- Never use sales jargon or vendor language.
-
-SECTION GUIDANCE:
-Section 1 (Identity): Draw out their core selling identity. What drives them. How they think about their role. A defining win or loss.
-Section 2 (Opening): Extract their word-for-word opening approach. The upfront contract. How they set expectations. What they say nearly every first call.
-Section 3 (Discovery): How they find the real problem. Their question approach. How they go from surface pain to real motivation.
-Section 4 (Qualification): How they protect their time. What makes them walk away. Their disqualification instincts.
-Section 5 (Communication): How they translate messages for different audiences. Language discipline. Product-name discipline. Triangulation.
-Section 6 (POV): How they build a point of view. What makes a great POV land. Their provocative question instinct.
-
-SECTION TRANSITIONS:
-After 3-4 meaningful exchanges in a section, signal completion by adding [SECTION_COMPLETE] at the end of your response, then smoothly transition with an opening question for the next section.
-After section 6 is complete, add [INTERVIEW_COMPLETE] at the end of your response.
-
-CRITICAL RULES:
-- Never name specific products or vendors unless the seller mentions them first.
-- Never tell the seller what good looks like — draw it out of them.
-- Never lecture. Only reflect and probe.
-- If the seller gives a shallow answer, probe once more before moving on.`;
-}
-
-async function moveToNextSection() {
-  currentSection++;
-  sectionTurns = 0;
-
-  if (currentSection >= SECTIONS.length) {
-    await generateSoulMd();
-    return;
-  }
-
-  updateProgress();
+TRANSITIONS: After 3-4 meaningful exchanges, append [SECTION_COMPLETE] at the very end of your message and open the next section.
+After section 6, append [INTERVIEW_COMPLETE] at the very end.`;
 }
 
 async function generateSoulMd() {
   document.getElementById('screen-interview').style.display = 'none';
   document.getElementById('screen-output').style.display = 'block';
   document.getElementById('output-loading-bar').classList.add('active');
-
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        system: `You are Soul Builder. Based on the interview conversation, generate a soul.md file — a seller identity document.
-
-FORMAT:
-# Soul.md — [Seller's Name or "Your"] Sales Identity
-
-## Section 1: Who I Am As a Seller
-[3-5 paragraphs in first person, seller's own language, their core identity and principles extracted from the interview]
-
-## Section 2: How I Open
-[Their upfront contract and opening approach, as close to their own words as possible]
-
-## Section 3: How I Discover
-[Their discovery approach, question style, L1/L2/L3 instincts]
-
-## Section 4: How I Qualify
-[Their qualification filters, time discipline, walk-away triggers]
-
-## Section 5: How I Communicate
-[Their language discipline, translation instinct, what they never do]
-
-## Section 6: How I Build a POV
-[Their POV instinct, provocative question approach, what makes it land]
-
-RULES:
-- Write entirely in first person using the seller's own language and vocabulary
-- Extract specific phrases they used and build them into the document
-- Every principle should be traceable to something they said in the interview
-- Do not add principles they did not demonstrate — only codify what emerged
-- Keep it under 600 words total
-- Do not use generic sales language`,
-        messages: [
-          ...conversationHistory,
-          { role: 'user', content: 'Based on everything I have shared in this interview, please generate my soul.md file now.' }
-        ]
+        system: `Generate a soul.md seller identity document from this interview. First person. Seller's own words. Six sections: Who I Am As a Seller, How I Open, How I Discover, How I Qualify, How I Communicate, How I Build a POV. Every principle must be traceable to something they said. No generic sales language. Under 600 words.`,
+        messages: [...conversationHistory, { role: 'user', content: 'Generate my soul.md now.' }]
       })
     });
-
-    const data = await response.json();
-    const soulMd = data.content[0].text;
-
+    const data = await res.json();
     document.getElementById('output-loading-bar').classList.remove('active');
-    document.getElementById('soul-output').textContent = soulMd;
-
+    document.getElementById('soul-output').textContent = data.content[0].text;
   } catch(e) {
     document.getElementById('output-loading-bar').classList.remove('active');
     document.getElementById('soul-output').textContent = 'Error generating soul.md. Please try again.';
@@ -879,23 +424,19 @@ RULES:
 }
 
 function copyToClipboard() {
-  const text = document.getElementById('soul-output').textContent;
-  navigator.clipboard.writeText(text).then(() => {
+  navigator.clipboard.writeText(document.getElementById('soul-output').textContent).then(() => {
     const btn = event.target;
-    const original = btn.textContent;
+    const orig = btn.textContent;
     btn.textContent = 'Copied ✓';
-    setTimeout(() => btn.textContent = original, 2000);
+    setTimeout(() => btn.textContent = orig, 2000);
   });
 }
 
 function downloadSoul() {
-  const text = document.getElementById('soul-output').textContent;
-  const blob = new Blob([text], { type: 'text/markdown' });
+  const blob = new Blob([document.getElementById('soul-output').textContent], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'soul.md';
-  a.click();
+  a.href = url; a.download = 'soul.md'; a.click();
   URL.revokeObjectURL(url);
 }
 
@@ -904,6 +445,8 @@ function restartInterview() {
   conversationHistory = [];
   currentSection = 0;
   sectionTurns = 0;
+  recognition = null;
+  isListening = false;
   document.getElementById('chat-area').innerHTML = '';
   document.getElementById('soul-output').textContent = '';
   document.getElementById('screen-output').style.display = 'none';
