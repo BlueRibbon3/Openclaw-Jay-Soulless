@@ -98,7 +98,43 @@
   .btn-gold:hover { background: var(--gold-light); }
   .loading-bar { height: 2px; background: linear-gradient(90deg, var(--gold), var(--rust), var(--gold)); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 2px; margin-bottom: 24px; display: none; }
   @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-  .loading-bar.active { display: block; }
+  .split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-bottom: 32px;
+  }
+
+  .split-panel { display: flex; flex-direction: column; gap: 12px; }
+
+  .split-label {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .split-chat {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.65;
+  }
+
+  .split-chat .message { margin-bottom: 14px; }
+  .split-chat .message-agent .message-bubble { background: var(--cream); border: none; font-size: 0.83rem; color: var(--muted); }
+  .split-chat .message-user .message-bubble { background: var(--ink); color: var(--paper); font-size: 0.83rem; }
+
+  @media (max-width: 700px) {
+    .split-layout { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -166,14 +202,23 @@
 <div id="screen-output">
   <div class="output-header">
     <h2>Your Soul.md</h2>
-    <p>Review your seller identity document. Edit anything that doesn't sound like you.</p>
+    <p>Your interview is on the left. Your identity document is on the right.</p>
   </div>
   <div class="loading-bar" id="output-loading-bar"></div>
-  <div class="soul-output" id="soul-output"></div>
-  <div class="output-actions">
-    <button class="btn-outline" onclick="copyToClipboard()">Copy to clipboard</button>
-    <button class="btn-outline" onclick="downloadSoul()">Download .md</button>
-    <button class="btn-gold" onclick="restartInterview()">Start over</button>
+  <div class="split-layout">
+    <div class="split-panel">
+      <div class="split-label">Interview transcript</div>
+      <div class="split-chat" id="output-chat"></div>
+    </div>
+    <div class="split-panel">
+      <div class="split-label">Soul.md</div>
+      <div class="soul-output" id="soul-output"></div>
+      <div class="output-actions">
+        <button class="btn-outline" onclick="copyToClipboard()">Copy</button>
+        <button class="btn-outline" onclick="downloadSoul()">Download .md</button>
+        <button class="btn-gold" onclick="restartInterview()">Start over</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -402,6 +447,12 @@ After section 6, append [INTERVIEW_COMPLETE] at the very end.`;
 async function generateSoulMd() {
   document.getElementById('screen-interview').style.display = 'none';
   document.getElementById('screen-output').style.display = 'block';
+
+  // Copy chat transcript to output panel
+  const chatSrc = document.getElementById('chat-area');
+  const chatDst = document.getElementById('output-chat');
+  chatDst.innerHTML = chatSrc.innerHTML;
+
   document.getElementById('output-loading-bar').classList.add('active');
   try {
     const res = await fetch('/.netlify/functions/chat', {
@@ -448,6 +499,7 @@ function restartInterview() {
   recognition = null;
   isListening = false;
   document.getElementById('chat-area').innerHTML = '';
+  document.getElementById('output-chat').innerHTML = '';
   document.getElementById('soul-output').textContent = '';
   document.getElementById('screen-output').style.display = 'none';
   document.getElementById('screen-profile').style.display = 'flex';
