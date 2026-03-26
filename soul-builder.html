@@ -332,7 +332,7 @@ async function sendMessage() {
   showTyping();
   document.getElementById('loading-bar').classList.add('active');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/.netlify/functions/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -404,7 +404,7 @@ async function generateSoulMd() {
   document.getElementById('screen-output').style.display = 'block';
   document.getElementById('output-loading-bar').classList.add('active');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/.netlify/functions/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
