@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expert Builder — Knowledge Extraction Interview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --accent: #4fc3f7;
+    --accent2: #00897b;
+    --warn: #ef6c00;
+    --serif: 'IBM Plex Serif', Georgia, serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 0%, rgba(79,195,247,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 100%, rgba(0,137,123,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; }
+
+  /* ── Screen 1: Setup ── */
+  #screen-setup {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .eb-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .eb-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .eb-wordmark-line {
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .eb-wordmark span {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .eb-header h1 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .eb-header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .eb-header p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .eb-setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 780px;
+    margin-bottom: 32px;
+  }
+
+  .eb-setup-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+  }
+
+  .eb-panel-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .eb-panel-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .eb-field {
+    margin-bottom: 16px;
+  }
+
+  .eb-field label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+  }
+
+  .eb-field input, .eb-field textarea, .eb-field select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 300;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .eb-field input:focus, .eb-field textarea:focus, .eb-field select:focus {
+    border-color: var(--accent);
+  }
+
+  .eb-field textarea { min-height: 72px; resize: none; line-height: 1.6; }
+  .eb-field select { cursor: pointer; }
+  .eb-field select option { background: var(--surface2); }
+
+  .eb-levels {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .eb-level {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .eb-level:hover { border-color: var(--border2); }
+
+  .eb-level.selected { border-color: var(--accent); background: rgba(79,195,247,0.06); }
+
+  .eb-level-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 2px;
+    width: 28px;
+  }
+
+  .eb-level-info { flex: 1; }
+
+  .eb-level-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .eb-level-desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .eb-start {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 40px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .eb-start:hover { background: #81d4fa; }
+  .eb-start:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── Screen 2: Interview ── */
+  #screen-interview {
+    display: none;
+    min-height: 100vh;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .eb-iheader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eb-imeta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .eb-iname {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--text);
+  }
+
+  .eb-idomain {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .eb-ilevel {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(79,195,247,0.3);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .eb-phase {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 32px;
+  }
+
+  .eb-phase-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .eb-phase-item.active { color: var(--accent); }
+  .eb-phase-item.done { color: var(--accent2); }
+
+  .eb-phase-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border2);
+    flex-shrink: 0;
+  }
+
+  .eb-phase-item.active .eb-phase-dot { background: var(--accent); }
+  .eb-phase-item.done .eb-phase-dot { background: var(--accent2); }
+
+  .eb-phase-sep {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .eb-chat { min-height: 300px; margin-bottom: 24px; }
+
+  .eb-msg { margin-bottom: 18px; animation: eb-fade 0.25s ease; }
+
+  @keyframes eb-fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eb-agent { display: flex; gap: 12px; align-items: flex-start; }
+
+  .eb-avatar {
+    width: 30px; height: 30px;
+    border: 1px solid rgba(79,195,247,0.4);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--accent);
+    margin-top: 2px;
+    background: rgba(79,195,247,0.05);
+  }
+
+  .eb-bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px 10px 10px 10px;
+    padding: 14px 18px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text);
+    max-width: 580px;
+    font-weight: 300;
+  }
+
+  .eb-user { display: flex; justify-content: flex-end; }
+
+  .eb-user .eb-bubble {
+    background: var(--surface2);
+    border-color: var(--border2);
+    border-radius: 10px 2px 10px 10px;
+    color: var(--text);
+  }
+
+  .eb-typing { display: flex; gap: 4px; padding: 6px 2px; }
+  .eb-typing span {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: eb-bounce 1.2s infinite;
+  }
+  .eb-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .eb-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes eb-bounce {
+    0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  .eb-level-indicator {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--muted);
+    text-align: center;
+    padding: 4px;
+    margin-bottom: 12px;
+    letter-spacing: 0.06em;
+    transition: color 0.3s;
+  }
+
+  .eb-level-indicator.upgraded { color: var(--accent); animation: eb-flash 0.5s ease; }
+  @keyframes eb-flash { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .eb-ibox {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    transition: border-color 0.15s;
+  }
+
+  .eb-ibox:focus-within { border-color: rgba(79,195,247,0.4); }
+  .eb-ibox.rec { border-color: var(--warn); }
+
+  .eb-ta {
+    width: 100%;
+    min-height: 88px;
+    padding: 14px 16px 44px;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    line-height: 1.6;
+  }
+
+  .eb-ta::placeholder { color: var(--muted); }
+
+  .eb-ifoot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .eb-hint { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); flex: 1; letter-spacing: 0.04em; }
+
+  .eb-mic {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--muted);
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .eb-mic:hover { border-color: var(--accent); color: var(--accent); }
+  .eb-mic.on { background: var(--warn); border-color: var(--warn); color: white; animation: eb-pulse 1s infinite; }
+  @keyframes eb-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,108,0,.4)} 50%{box-shadow:0 0 0 6px rgba(239,108,0,0)} }
+
+  .eb-send {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .eb-send:hover { background: #81d4fa; }
+  .eb-send:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .eb-bar {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    background-size: 200% 100%;
+    animation: eb-shimmer 1.5s infinite;
+    margin-bottom: 20px;
+    display: none;
+  }
+  @keyframes eb-shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+  .eb-bar.on { display: block; }
+
+  /* ── Screen 3: Output ── */
+  #screen-output {
+    display: none;
+    min-height: 100vh;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .eb-oheader {
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .eb-oheader h2 {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .eb-oheader p { font-size: 0.8rem; color: var(--muted); }
+
+  .eb-oactions { display: flex; gap: 8px; }
+
+  .eb-oaction {
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .eb-oaction:hover { border-color: var(--accent); color: var(--accent); }
+
+  .eb-orestart {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  .eb-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .eb-split-label {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .eb-split-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .eb-transcript {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px;
+    max-height: 72vh;
+    overflow-y: auto;
+  }
+
+  .eb-transcript .eb-bubble { font-size: 0.8rem; }
+  .eb-transcript .eb-msg { margin-bottom: 12px; }
+
+  .eb-profile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px 28px;
+    font-size: 0.88rem;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    color: var(--text);
+    font-weight: 300;
+    max-height: 72vh;
+    overflow-y: auto;
+  }
+
+  .eb-ostatus {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    padding: 16px;
+  }
+
+  @media (max-width: 680px) {
+    .eb-setup-grid { grid-template-columns: 1fr; }
+    .eb-split { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- Screen 1: Setup -->
+<div id="screen-setup">
+  <div class="eb-header">
+    <div class="eb-wordmark">
+      <div class="eb-wordmark-line"></div>
+      <span>Expert Builder</span>
+      <div class="eb-wordmark-line"></div>
+    </div>
+    <h1>Expertise is more than<br><em>knowledge.</em></h1>
+    <p>Make your AI work for you, not create more work for you. A structured interview that extracts how you think — not what you know, but how you decide, what you protect, and what you'd never do again.</p>
+  </div>
+
+  <div class="eb-setup-grid" style="grid-template-columns: 1fr; max-width: 480px;">
+    <div class="eb-setup-panel">
+      <div class="eb-panel-label">Your profile</div>
+      <div class="eb-field">
+        <label>Your name</label>
+        <input type="text" id="eb-name" placeholder="e.g. Sarah Chen" oninput="checkReady()">
+      </div>
+      <div class="eb-field">
+        <label>Domain / field</label>
+        <input type="text" id="eb-domain" placeholder="e.g. Osteopathy, Criminal Law, Structural Engineering" oninput="checkReady()">
+      </div>
+      <div class="eb-field">
+        <label>LinkedIn profile URL <span style="color:var(--muted);font-size:0.6rem;font-family:var(--mono)">— optional, used to personalise questions</span></label>
+        <input type="url" id="eb-linkedin" placeholder="https://linkedin.com/in/yourprofile">
+      </div>
+      <div class="eb-field">
+        <label>Years of experience</label>
+        <select id="eb-years" onchange="checkReady()">
+          <option value="">Select range</option>
+          <option value="1-5">1–5 years</option>
+          <option value="5-10">5–10 years</option>
+          <option value="10-20">10–20 years</option>
+          <option value="20+">20+ years</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="eb-start" id="eb-start" disabled onclick="startInterview()">Begin extraction →</button>
+</div>
+
+<!-- Screen 2: Interview -->
+<div id="screen-interview">
+  <div class="eb-iheader">
+    <div class="eb-imeta">
+      <div class="eb-iname" id="eb-iname">—</div>
+      <div class="eb-idomain" id="eb-idomain">—</div>
+    </div>
+    <div class="eb-ilevel" id="eb-ilevel">LEVEL 100</div>
+  </div>
+
+  <div class="eb-phase" id="eb-phase">
+    <div class="eb-phase-item active" id="ph-1">
+      <div class="eb-phase-dot"></div>Surface
+    </div>
+    <div class="eb-phase-sep"></div>
+    <div class="eb-phase-item" id="ph-2">
+      <div class="eb-phase-dot"></div>Depth
+    </div>
+    <div class="eb-phase-sep"></div>
+    <div class="eb-phase-item" id="ph-3">
+      <div class="eb-phase-dot"></div>Edge
+    </div>
+  </div>
+
+  <div class="eb-bar" id="eb-bar"></div>
+  <div class="eb-chat" id="eb-chat"></div>
+  <div class="eb-level-indicator" id="eb-lindicator">interviewer · level 100 · structured</div>
+
+  <div class="eb-ibox" id="eb-ibox">
+    <textarea class="eb-ta" id="eb-ta" placeholder="Respond here or tap the mic to speak..." onkeydown="onKey(event)" oninput="onInput()"></textarea>
+    <div class="eb-ifoot">
+      <span class="eb-hint" id="eb-hint">tap mic to speak · enter to send</span>
+      <button class="eb-mic" id="eb-mic" onclick="toggleMic()">🎤</button>
+      <button class="eb-send" id="eb-send" onclick="doSend()" disabled>Extract →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 3: Output -->
+<div id="screen-output">
+  <div class="eb-oheader">
+    <div>
+      <h2 id="eb-otitle">Expert Profile</h2>
+      <p id="eb-osubtitle">—</p>
+    </div>
+    <div class="eb-oactions">
+      <button class="eb-oaction" onclick="doCopy()">Copy profile</button>
+      <button class="eb-oaction" onclick="doDownload()">Download .md</button>
+      <button class="eb-orestart" onclick="doRestart()">New session</button>
+    </div>
+  </div>
+  <div class="eb-ostatus" id="eb-ostatus"></div>
+  <div class="eb-split">
+    <div>
+      <div class="eb-split-label">Interview transcript</div>
+      <div class="eb-transcript" id="eb-transcript"></div>
+    </div>
+    <div>
+      <div class="eb-split-label">Expert profile</div>
+      <div class="eb-profile" id="eb-profile" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+// ── State ────────────────────────────────────────────────────
+let expertName='', domain='', spec='', years='', levelCeiling=100;
+let currentLevel=100, phase=1, signalCount100=0, signalCount200=0;
+let hist=[], busy=false, recog=null, listening=false;
+
+const LEVEL_SIGNALS_100 = [
+  /not always sure/i, /it depends and/i, /that's a tough one/i,
+  /failed/i, /went wrong/i, /didn't work/i, /I was wrong/i,
+  /I used to think/i, /actually/i, /funny you ask/i
+];
+
+const LEVEL_SIGNALS_200 = [
+  /changed my mind/i, /used to believe/i, /I can't explain why/i,
+  /intuitively/i, /can't quite articulate/i, /no that's not quite right/i,
+  /what most people don't realise/i, /the thing nobody talks about/i
+];
+
+// ── Setup ────────────────────────────────────────────────────
+function checkReady() {
+  const name = document.getElementById('eb-name').value.trim();
+  const dom = document.getElementById('eb-domain').value.trim();
+  const yrs = document.getElementById('eb-years').value;
+  document.getElementById('eb-start').disabled = !(name && dom && yrs);
+}
+
+function pickLevel(el) {
+  document.querySelectorAll('.eb-level').forEach(l=>l.classList.remove('selected'));
+  el.classList.add('selected');
+  levelCeiling = parseInt(el.dataset.level);
+  checkReady();
+}
+
+// ── Interview start ──────────────────────────────────────────
+async function startInterview() {
+  expertName = document.getElementById('eb-name').value.trim();
+  domain = document.getElementById('eb-domain').value.trim();
+  spec = document.getElementById('eb-linkedin').value.trim();
+  years = document.getElementById('eb-years').value;
+  levelCeiling = 200;
+
+  document.getElementById('eb-iname').textContent = expertName;
+  document.getElementById('eb-idomain').textContent = domain;
+  document.getElementById('eb-ilevel').textContent = `LEVEL 100`;
+  document.getElementById('eb-otitle').textContent = `Expert Profile — ${expertName}`;
+  document.getElementById('eb-osubtitle').textContent = `${domain} · ${years} years`;
+
+  show('screen-interview');
+  initMic();
+
+  // Show typing indicator while generating opening question
+  showTyping();
+  document.getElementById('eb-bar').classList.add('on');
+  const opening = await buildOpeningQuestion();
+  hideTyping();
+  document.getElementById('eb-bar').classList.remove('on');
+
+  addAgent(opening);
+  hist.push({ role: 'assistant', content: opening });
+}
+
+async function buildOpeningQuestion() {
+  try {
+    const res = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 120,
+        system: `You generate the opening question for an expert interview.
+Given a domain or field, produce a single warm, welcoming opening question that:
+- Uses the correct noun for a practitioner in that field (e.g. "Criminal Law" → "lawyer", "Osteopathy" → "osteopath", "Dancing" → "dancer", "Baking" → "baker", "Technology Sales" → "technology seller", "Law" → "lawyer", "Medicine" → "doctor", "Architecture" → "architect")
+- Asks what they enjoy most about their work
+- Invites a story that represents that
+- Feels natural and human, not robotic
+
+Return only the question. No preamble. No explanation.`,
+        messages: [{ role: 'user', content: `Domain: ${domain}` }]
+      })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return data.content[0].text.trim();
+  } catch(e) {
+    console.error('Opening question generation failed:', e.message);
+    // Safe fallback — ask about their work without assuming the domain is a role noun
+    return `What do you enjoy most about what you do? Is there a story from your ${domain} work that captures it best?`;
+  }
+}
+
+// ── Phase management ─────────────────────────────────────────
+function setPhase(p) {
+  phase = p;
+  ['ph-1','ph-2','ph-3'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+    if (i+1 < p) el.classList.add('done');
+    if (i+1 === p) el.classList.add('active');
+  });
+}
+
+// ── Signal detection ─────────────────────────────────────────
+function detectSignals(text) {
+  if (currentLevel < 200 && levelCeiling >= 200) {
+    const hits = LEVEL_SIGNALS_100.filter(r => r.test(text)).length;
+    signalCount100 += hits;
+    if (signalCount100 >= 2) {
+      currentLevel = 200;
+      updateLevelIndicator();
+    }
+  }
+  if (currentLevel < 300 && levelCeiling >= 300 && phase >= 2) {
+    const hits = LEVEL_SIGNALS_200.filter(r => r.test(text)).length;
+    signalCount200 += hits;
+    if (signalCount200 >= 2) {
+      currentLevel = 300;
+      updateLevelIndicator();
+    }
+  }
+}
+
+function updateLevelIndicator() {
+  const el = document.getElementById('eb-lindicator');
+  const labels = {
+    100: 'interviewer · level 100 · structured',
+    200: 'interviewer · level 200 · adaptive',
+    300: 'interviewer · level 300 · challenger'
+  };
+  el.textContent = labels[currentLevel];
+  el.classList.add('upgraded');
+  setTimeout(()=>el.classList.remove('upgraded'), 600);
+  document.getElementById('eb-ilevel').textContent = `LEVEL ${currentLevel}`;
+}
+
+// ── Chat UI ──────────────────────────────────────────────────
+function show(id) {
+  document.querySelectorAll('#screen-setup,#screen-interview,#screen-output')
+    .forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+function addAgent(txt) {
+  const c = document.getElementById('eb-chat');
+  const d = document.createElement('div');
+  d.className='eb-msg eb-agent';
+  d.innerHTML=`<div class="eb-avatar">EB</div><div class="eb-bubble">${txt.replace(/\n/g,'<br>')}</div>`;
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+
+function addUser(txt) {
+  const c = document.getElementById('eb-chat');
+  const d = document.createElement('div');
+  d.className='eb-msg eb-user';
+  d.innerHTML=`<div class="eb-bubble">${txt.replace(/\n/g,'<br>')}</div>`;
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+
+function showTyping() {
+  const c = document.getElementById('eb-chat');
+  const d = document.createElement('div');
+  d.className='eb-msg eb-agent'; d.id='eb-typing';
+  d.innerHTML=`<div class="eb-avatar">EB</div><div class="eb-bubble"><div class="eb-typing"><span></span><span></span><span></span></div></div>`;
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+
+function hideTyping() { const t=document.getElementById('eb-typing'); if(t) t.remove(); }
+
+function onKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doSend();} }
+function onInput() { document.getElementById('eb-send').disabled=!document.getElementById('eb-ta').value.trim(); }
+
+// ── Send message ─────────────────────────────────────────────
+async function doSend() {
+  if(busy) return;
+  const ta = document.getElementById('eb-ta');
+  const txt = ta.value.trim();
+  if(!txt) return;
+  if(listening && recog) recog.stop();
+  ta.value='';
+  document.getElementById('eb-send').disabled=true;
+  busy=true;
+  addUser(txt);
+  hist.push({role:'user', content:txt});
+  detectSignals(txt);
+  showTyping();
+  document.getElementById('eb-bar').classList.add('on');
+
+  try {
+    const res = await fetch('/.netlify/functions/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:800,
+        system: buildSystem(),
+        messages: hist
+      })
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const reply = data.content[0].text;
+    hideTyping();
+    document.getElementById('eb-bar').classList.remove('on');
+    busy=false;
+
+    if(reply.includes('[PHASE2]')) {
+      const clean=reply.replace('[PHASE2]','').trim();
+      addAgent(clean); hist.push({role:'assistant',content:clean});
+      setPhase(2);
+    } else if(reply.includes('[PHASE3]')) {
+      const clean=reply.replace('[PHASE3]','').trim();
+      addAgent(clean); hist.push({role:'assistant',content:clean});
+      setPhase(3);
+    } else if(reply.includes('[COMPLETE]')) {
+      const clean=reply.replace('[COMPLETE]','').trim();
+      addAgent(clean); hist.push({role:'assistant',content:clean});
+      await generateProfile();
+    } else {
+      addAgent(reply); hist.push({role:'assistant',content:reply});
+    }
+  } catch(err) {
+    hideTyping();
+    document.getElementById('eb-bar').classList.remove('on');
+    busy=false;
+    addAgent(`Connection error: ${err.message}`);
+  }
+  document.getElementById('eb-send').disabled=!document.getElementById('eb-ta').value.trim();
+}
+
+function buildSystem() {
+  const linkedinCtx = spec ? `\nLinkedIn profile provided: ${spec}. If you can infer career history, tenure, companies, or role transitions from this URL reference it naturally in your questions — use it to make the interview feel specific to this person rather than generic.\n` : '';
+
+  const lvl100 = `
+LEVEL 100 RULES (always active):
+1. One question at a time. Always.
+2. Open questions only — no yes/no, no leading questions.
+3. After every substantive answer, reflect back: "What I'm hearing is [principle] — is that right?"
+4. Never evaluate. No "great point", no "interesting". No approval or disapproval.
+5. Never answer for them. If they pause, wait.
+6. Use their exact words when reflecting back.
+7. Soften "why" — use "what led you to that?" instead.
+8. Work only with what they have given you.`;
+
+  const lvl200 = currentLevel >= 200 ? `
+
+LEVEL 200 RULES (now active — you detected depth signals):
+9. If the answer is too clean or rehearsed, probe the exception: "Is there a version of this that's messier?"
+10. If they change subject, follow them — name it and return: "Let's stay here a moment — then I want to come back to [X]."
+11. After a significant answer, wait before asking the next question. Let silence work.
+12. If the same word or concept appears twice, name it: "You've used [X] a few times. What does [X] mean to you specifically?"
+13. The important content is usually in the middle of the answer, not the end.` : '';
+
+  const lvl300 = currentLevel >= 300 ? `
+
+LEVEL 300 RULES (now active — you detected challenger signals):
+14. Name gaps between stated principles and actual stories: "You said you always [X] but in that story you did [Y] — help me understand the difference."
+15. Challenge once, then accept. Never press twice.
+16. Once only: "What would someone who disagrees with you say?"
+17. In Phase 3: "What did you believe [5/10/20] years ago that you've changed your mind about?"
+18. Final question always: "What's something you're pretty confident is true in ${domain} that you couldn't prove to a sceptic?" — this is the last question of every Level 300 interview. Never skip it.` : '';
+
+  const phaseGuide = `
+
+CURRENT STATE:
+- Expert: ${expertName}, ${domain}${spec ? ', ' + spec : ''}, ${years} years experience
+- Current level: ${currentLevel} (ceiling: ${levelCeiling})
+- Current phase: ${phase}
+
+PHASE GUIDE:
+Phase 1 (Surface): Get them talking. Find the thread. Move to Phase 2 after they've described what they do and given one specific example. Signal transition with [PHASE2] appended to your message.
+Phase 2 (Depth): Extract diagnostic logic and decision criteria. Deploy Moves 2-4. Move to Phase 3 after extracting two principles specific to this expert. Signal with [PHASE3].
+Phase 3 (Edge): Personal stake, cautionary stories, Level 300 moves if active. Signal interview complete with [COMPLETE].
+
+FIVE MOVES:
+Move 1 — Reflect: "What I'm hearing is [principle] — is that right?"
+Move 2 — Specific: "Walk me through that — what did you actually do first?"
+Move 3 — Counter: "When would that not be true?"
+Move 4 — Implicit: "What are you looking for when you do that — what would make you change course?"
+Move 5 — Stake: "What's something you've seen go wrong that you never want to see again?"`;
+
+  return `You are Expert Builder — an AI interviewer that extracts practitioner knowledge through structured conversation. Your job is to surface how this expert thinks: how they diagnose, how they decide, what they protect, and what they know that isn't in any textbook.
+${linkedinCtx}${lvl100}${lvl200}${lvl300}${phaseGuide}`;
+}
+
+// ── Profile generation ───────────────────────────────────────
+async function generateProfile() {
+  show('screen-output');
+  const transcript = document.getElementById('eb-chat');
+  document.getElementById('eb-transcript').innerHTML = transcript.innerHTML;
+  document.getElementById('eb-ostatus').textContent = 'Generating expert profile...';
+
+  const outputSections = currentLevel >= 300
+    ? `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do\n## What they used to believe\n## What they know that isn't in the textbook`
+    : currentLevel >= 200
+    ? `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do\n## What surprised me in this interview`
+    : `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do`;
+
+  try {
+    const res = await fetch('/.netlify/functions/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`Generate an expert profile document from this interview transcript. Write entirely in first person using the expert's own words and vocabulary. Every principle must trace to something they said in the interview — do not invent or add. No generic professional language. Be specific. Be concrete. Use their stories.
+
+Format:
+# Expert Profile — ${expertName}
+Domain: ${domain}${spec ? ' · ' + spec : ''}
+Experience: ${years} years
+Interview level: ${currentLevel}
+Date: ${new Date().toLocaleDateString('en-AU')}
+
+${outputSections}
+
+Under "What they know that isn't in the textbook" (Level 300 only): capture their response to "what do you know that you can't prove" — this is the most valuable section. Quote them closely if possible.`,
+        messages:[...hist, {role:'user', content:'Generate my expert profile now based on everything I shared.'}]
+      })
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    document.getElementById('eb-ostatus').textContent='';
+    document.getElementById('eb-profile').textContent = data.content[0].text;
+    document.getElementById('eb-profile').style.display='block';
+  } catch(err) {
+    document.getElementById('eb-ostatus').textContent=`Error generating profile: ${err.message}`;
+  }
+}
+
+// ── Output actions ───────────────────────────────────────────
+function doCopy() {
+  navigator.clipboard.writeText(document.getElementById('eb-profile').textContent).then(()=>{
+    const b=event.target; const o=b.textContent;
+    b.textContent='Copied'; setTimeout(()=>b.textContent=o, 2000);
+  });
+}
+
+function doDownload() {
+  const text = document.getElementById('eb-profile').textContent;
+  const blob = new Blob([text], {type:'text/markdown'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`expert-profile-${expertName.toLowerCase().replace(/\s+/g,'-')}.md`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function doRestart() {
+  expertName=''; domain=''; spec=''; years=''; levelCeiling=100;
+  currentLevel=100; phase=1; signalCount100=0; signalCount200=0;
+  hist=[]; busy=false; recog=null; listening=false;
+  document.getElementById('eb-chat').innerHTML='';
+  document.getElementById('eb-transcript').innerHTML='';
+  document.getElementById('eb-profile').textContent='';
+  document.getElementById('eb-profile').style.display='none';
+  document.getElementById('eb-ostatus').textContent='';
+  document.getElementById('eb-name').value='';
+  document.getElementById('eb-domain').value='';
+  document.getElementById('eb-linkedin').value='';
+  document.getElementById('eb-years').value='';
+  document.querySelectorAll('.eb-level').forEach(l=>l.classList.remove('selected'));
+  document.getElementById('eb-start').disabled=true;
+  setPhase(1);
+  show('screen-setup');
+}
+
+// ── Voice ────────────────────────────────────────────────────
+function initMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('eb-mic');
+  if(!SR) { btn.style.display='none'; return; }
+  recog = new SR();
+  recog.continuous=true; recog.interimResults=true; recog.lang='en-AU';
+  let final='';
+  recog.onstart=()=>{
+    listening=true; final=document.getElementById('eb-ta').value;
+    btn.classList.add('on'); btn.textContent='◼';
+    document.getElementById('eb-ibox').classList.add('rec');
+    document.getElementById('eb-hint').textContent='listening... tap to stop';
+  };
+  recog.onresult=(e)=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) final+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
+    }
+    const ta=document.getElementById('eb-ta');
+    ta.value=final+interim;
+    document.getElementById('eb-send').disabled=!ta.value.trim();
+  };
+  recog.onend=()=>{
+    listening=false; btn.classList.remove('on'); btn.textContent='🎤';
+    document.getElementById('eb-ibox').classList.remove('rec');
+    document.getElementById('eb-hint').textContent='tap mic to speak · enter to send';
+    const ta=document.getElementById('eb-ta');
+    ta.value=ta.value.trim();
+    document.getElementById('eb-send').disabled=!ta.value.trim();
+  };
+  recog.onerror=(e)=>{
+    listening=false; btn.classList.remove('on'); btn.textContent='🎤';
+    document.getElementById('eb-ibox').classList.remove('rec');
+    if(e.error==='not-allowed') alert('Microphone access denied.');
+  };
+}
+
+function toggleMic() {
+  if(!recog) return;
+  if(listening) recog.stop();
+  else { document.getElementById('eb-ta').value=''; recog.start(); }
+}
+
+// Init
+document.getElementById('screen-setup').style.display='flex';
+document.getElementById('screen-interview').style.display='none';
+document.getElementById('screen-output').style.display='none';
+</script>
+</body>
+</html>
