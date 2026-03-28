@@ -602,9 +602,45 @@
     padding: 16px;
   }
 
-  @media (max-width: 680px) {
-    .eb-setup-grid { grid-template-columns: 1fr; }
-    .eb-split { grid-template-columns: 1fr; }
+  .eb-mode-toggle {
+    display: flex;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .eb-mode-btn {
+    flex: 1;
+    padding: 8px 16px;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .eb-mode-btn.active {
+    background: var(--surface);
+    color: var(--accent);
+    border: 1px solid var(--border2);
+  }
+
+  .eb-mode-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+    max-width: 480px;
+    text-align: center;
   }
 </style>
 </head>
@@ -623,23 +659,30 @@
     <p>Make your AI work for you, not create more work for you. A structured interview that extracts how you think — not what you know, but how you decide, what you protect, and what you'd never do again.</p>
   </div>
 
+  <div class="eb-mode-toggle">
+    <button class="eb-mode-btn active" id="mode-pro" onclick="setMode('professional')">Professional</button>
+    <button class="eb-mode-btn" id="mode-per" onclick="setMode('personal')">Personal</button>
+  </div>
+
+  <div class="eb-mode-desc" id="eb-mode-desc">Extract expertise from any professional domain — law, medicine, engineering, sales, design and more.</div>
+
   <div class="eb-setup-grid" style="grid-template-columns: 1fr; max-width: 480px;">
     <div class="eb-setup-panel">
-      <div class="eb-panel-label">Your profile</div>
+      <div class="eb-panel-label" id="eb-panel-label">Your profile</div>
       <div class="eb-field">
         <label>Your name</label>
         <input type="text" id="eb-name" placeholder="e.g. Sarah Chen" oninput="checkReady()">
       </div>
-      <div class="eb-field">
-        <label>Domain / field</label>
+      <div class="eb-field" id="domain-field">
+        <label id="domain-label">Domain / field</label>
         <input type="text" id="eb-domain" placeholder="e.g. Osteopathy, Criminal Law, Structural Engineering" oninput="checkReady()">
       </div>
       <div class="eb-field">
-        <label>LinkedIn profile URL <span style="color:var(--muted);font-size:0.6rem;font-family:var(--mono)">— optional, used to personalise questions</span></label>
+        <label id="linkedin-label">LinkedIn profile URL <span style="color:var(--muted);font-size:0.6rem;font-family:var(--mono)">— optional, used to personalise questions</span></label>
         <input type="url" id="eb-linkedin" placeholder="https://linkedin.com/in/yourprofile">
       </div>
       <div class="eb-field">
-        <label>Years of experience</label>
+        <label id="years-label">Years of experience</label>
         <select id="eb-years" onchange="checkReady()">
           <option value="">Select range</option>
           <option value="1-5">1–5 years</option>
@@ -724,6 +767,33 @@
 let expertName='', domain='', spec='', years='', levelCeiling=100;
 let currentLevel=100, phase=1, signalCount100=0, signalCount200=0;
 let hist=[], busy=false, recog=null, listening=false;
+let interviewMode='professional';
+
+function setMode(mode) {
+  interviewMode = mode;
+  document.getElementById('mode-pro').classList.toggle('active', mode==='professional');
+  document.getElementById('mode-per').classList.toggle('active', mode==='personal');
+
+  if (mode === 'personal') {
+    document.getElementById('eb-mode-desc').textContent = 'Build a personal soul — how you run your household, communicate, prioritise, and what you\'d never hand off to anyone else.';
+    document.getElementById('domain-label').textContent = 'Your main role in the family';
+    document.getElementById('eb-domain').placeholder = 'e.g. Mum, Primary carer, Family manager';
+    document.getElementById('linkedin-label').innerHTML = 'Your name as you\'d like the agent to address you <span style="color:var(--muted);font-size:0.6rem;font-family:var(--mono)">— optional</span>';
+    document.getElementById('eb-linkedin').placeholder = 'e.g. Chelsea, Mum, Mrs Ulrich';
+    document.getElementById('eb-linkedin').type = 'text';
+    document.getElementById('years-label').textContent = 'How long have you been doing this role?';
+    document.getElementById('eb-start').textContent = 'Begin interview →';
+  } else {
+    document.getElementById('eb-mode-desc').textContent = 'Extract expertise from any professional domain — law, medicine, engineering, sales, design and more.';
+    document.getElementById('domain-label').textContent = 'Domain / field';
+    document.getElementById('eb-domain').placeholder = 'e.g. Osteopathy, Criminal Law, Structural Engineering';
+    document.getElementById('linkedin-label').innerHTML = 'LinkedIn profile URL <span style="color:var(--muted);font-size:0.6rem;font-family:var(--mono)">— optional, used to personalise questions</span>';
+    document.getElementById('eb-linkedin').placeholder = 'https://linkedin.com/in/yourprofile';
+    document.getElementById('eb-linkedin').type = 'url';
+    document.getElementById('years-label').textContent = 'Years of experience';
+    document.getElementById('eb-start').textContent = 'Begin extraction →';
+  }
+}
 
 const LEVEL_SIGNALS_100 = [
   /not always sure/i, /it depends and/i, /that's a tough one/i,
@@ -763,8 +833,8 @@ async function startInterview() {
   document.getElementById('eb-iname').textContent = expertName;
   document.getElementById('eb-idomain').textContent = domain;
   document.getElementById('eb-ilevel').textContent = `LEVEL 100`;
-  document.getElementById('eb-otitle').textContent = `Expert Profile — ${expertName}`;
-  document.getElementById('eb-osubtitle').textContent = `${domain} · ${years} years`;
+  document.getElementById('eb-otitle').textContent = interviewMode === 'personal' ? `Soul.md — ${spec || expertName}` : `Expert Profile — ${expertName}`;
+  document.getElementById('eb-osubtitle').textContent = interviewMode === 'personal' ? `${domain} · ${years}` : `${domain} · ${years} years`;
 
   show('screen-interview');
   initMic();
@@ -781,6 +851,10 @@ async function startInterview() {
 }
 
 async function buildOpeningQuestion() {
+  if (interviewMode === 'personal') {
+    const name = spec || expertName;
+    return `${name}, I want to start with something that captures what you do every day. What's the thing you manage for your family that nobody else would manage the same way? Tell me about it.`;
+  }
   try {
     const res = await fetch('/.netlify/functions/chat', {
       method: 'POST',
@@ -804,7 +878,6 @@ Return only the question. No preamble. No explanation.`,
     return data.content[0].text.trim();
   } catch(e) {
     console.error('Opening question generation failed:', e.message);
-    // Safe fallback — ask about their work without assuming the domain is a role noun
     return `What do you enjoy most about what you do? Is there a story from your ${domain} work that captures it best?`;
   }
 }
@@ -948,6 +1021,48 @@ async function doSend() {
 }
 
 function buildSystem() {
+  if (interviewMode === 'personal') {
+    const name = spec || expertName;
+    return `You are a warm, curious personal interviewer helping ${expertName} articulate how they run their family life — their systems, their communication style, their priorities, and what they'd never hand off to anyone else. The output will be used to build a personal AI agent that acts in their voice.
+
+This is not a professional interview. Be warm, conversational, and genuinely curious. Never make them feel studied.
+
+PERSON: ${expertName}, known as ${name}. Family management role: ${domain}. Experience: ${years}.
+
+YOUR SIX SECTIONS:
+1. Identity as a family manager — what they do that nobody else would do the same way
+2. How they communicate — their voice with schools, other parents, family. What they'd never say.
+3. How they prioritise — what's non-negotiable, what they've learned to let go of
+4. How they manage information — their actual system for tracking schedules, school comms, activities
+5. How they make decisions — what they trust their instincts on, what they always check
+6. What they'd never delegate — the hard limits for the agent. THIS SECTION IS MANDATORY.
+
+SECTION 6 OPENING: "If I told you an AI could handle your school emails completely — read them, decide what matters, draft and send responses — what would your reaction be?"
+
+FIVE MOVES:
+Move 1 — Reflect: "What I'm hearing is [principle] — is that right?"
+Move 2 — Specific: "Walk me through that — what did you actually do first?"
+Move 3 — Exception: "When does that not work — when does your usual approach break down?"
+Move 4 — Implicit: "What are you actually watching for when you do that?"
+Move 5 — Stake: "Tell me about a time when it really mattered that you were the one who handled it."
+
+RULES:
+1. One question at a time. Always.
+2. Open questions only. No yes/no.
+3. Reflect before you probe.
+4. Never evaluate. No approval or disapproval.
+5. Use their exact words when reflecting back.
+6. Domestic expertise is real expertise. Never diminish what they do.
+7. Never suggest what the agent should do — extract what they want.
+
+PHASE TRANSITIONS:
+Phase 1 (Sections 1-2): Get them talking, establish their voice. Signal [PHASE2] after Section 2.
+Phase 2 (Sections 3-4-5): Extract systems and decision logic. Signal [PHASE3] after Section 5.
+Phase 3 (Section 6): The hard limits. Signal [COMPLETE] after Section 6. Do not skip this section.
+
+CRITICAL: The most important output is their communication voice — specific phrases, how they address teachers and other parents, their sign-off style, their tone. Listen for these and extract them explicitly.`;
+  }
+
   const linkedinCtx = spec ? `\nLinkedIn profile provided: ${spec}. If you can infer career history, tenure, companies, or role transitions from this URL reference it naturally in your questions — use it to make the interview feel specific to this person rather than generic.\n` : '';
 
   const lvl100 = `
@@ -1007,13 +1122,49 @@ async function generateProfile() {
   show('screen-output');
   const transcript = document.getElementById('eb-chat');
   document.getElementById('eb-transcript').innerHTML = transcript.innerHTML;
-  document.getElementById('eb-ostatus').textContent = 'Generating expert profile...';
+  document.getElementById('eb-ostatus').textContent = interviewMode === 'personal' ? 'Generating your personal soul...' : 'Generating expert profile...';
 
-  const outputSections = currentLevel >= 300
-    ? `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do\n## What they used to believe\n## What they know that isn't in the textbook`
-    : currentLevel >= 200
-    ? `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do\n## What surprised me in this interview`
-    : `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do`;
+  const systemPrompt = interviewMode === 'personal'
+    ? `Generate a personal soul.md from this interview. Write entirely in first person using ${expertName}'s own words and phrases. Every principle must trace to something they said. No generic language. Be specific and concrete.
+
+Format:
+# Soul.md — ${spec || expertName}'s Personal Identity
+Generated: ${new Date().toLocaleDateString('en-AU')}
+
+## Who I am as a family manager
+[Their role, what drives them, what they're proud of]
+
+## How I communicate
+[Their voice — specific phrases, how they address teachers and other parents, what they'd never say, their email sign-off style, formal vs informal register]
+
+## How I prioritise
+[Non-negotiables, what they've learned to let go of, how they handle competing demands]
+
+## How I manage information
+[Their actual system — schedules, school emails, activities, appointments]
+
+## How I make decisions
+[What they trust their instincts on, what they always check, what's their call alone]
+
+## What I'd never delegate
+[Hard limits for the agent. Specific things it must never do autonomously. Decisions and conversations that require them specifically.]
+
+## My voice
+[Specific phrases they use. How they open and close emails. How they address teachers, other parents, family. Sentence structure, sign-offs, tone. This section feeds directly into the agent's communication style — be as specific as possible.]`
+    : `Generate an expert profile document from this interview transcript. Write entirely in first person using the expert's own words and vocabulary. Every principle must trace to something they said — do not invent or add. No generic professional language. Be specific. Be concrete. Use their stories.
+
+Format:
+# Expert Profile — ${expertName}
+Domain: ${domain}
+Experience: ${years} years
+Interview level: ${currentLevel}
+Date: ${new Date().toLocaleDateString('en-AU')}
+
+${currentLevel >= 300
+  ? `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do\n## What they used to believe\n## What they know that isn't in the textbook`
+  : currentLevel >= 200
+  ? `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do\n## What surprised me in this interview`
+  : `## Who they are as a practitioner\n## How they identify the real problem\n## How they decide\n## What they'd never do`}`;
 
   try {
     const res = await fetch('/.netlify/functions/chat', {
@@ -1022,19 +1173,8 @@ async function generateProfile() {
       body: JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
-        system:`Generate an expert profile document from this interview transcript. Write entirely in first person using the expert's own words and vocabulary. Every principle must trace to something they said in the interview — do not invent or add. No generic professional language. Be specific. Be concrete. Use their stories.
-
-Format:
-# Expert Profile — ${expertName}
-Domain: ${domain}${spec ? ' · ' + spec : ''}
-Experience: ${years} years
-Interview level: ${currentLevel}
-Date: ${new Date().toLocaleDateString('en-AU')}
-
-${outputSections}
-
-Under "What they know that isn't in the textbook" (Level 300 only): capture their response to "what do you know that you can't prove" — this is the most valuable section. Quote them closely if possible.`,
-        messages:[...hist, {role:'user', content:'Generate my expert profile now based on everything I shared.'}]
+        system: systemPrompt,
+        messages:[...hist, {role:'user', content: interviewMode === 'personal' ? 'Generate my personal soul.md now.' : 'Generate my expert profile now based on everything I shared.'}]
       })
     });
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1073,7 +1213,8 @@ function doRestart() {
   document.getElementById('eb-profile').textContent='';
   document.getElementById('eb-profile').style.display='none';
   document.getElementById('eb-ostatus').textContent='';
-  document.getElementById('eb-name').value='';
+  interviewMode='professional';
+  setMode('professional');
   document.getElementById('eb-domain').value='';
   document.getElementById('eb-linkedin').value='';
   document.getElementById('eb-years').value='';
