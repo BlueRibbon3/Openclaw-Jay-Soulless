@@ -9,15 +9,16 @@
 
 ## What this is
 
-Clawdbot is a personal AI sales agent system built on OpenClaw, running on a Proxmox homelab. It embodies Jay's sales methodology, voice, and approach — capable of handling outbound prospect research, POV generation, and multi-persona sales contexts.
+Jay is a personal AI sales agent system built on OpenClaw, running on a Proxmox homelab. It embodies a sellers methodology, voice, and approach — capable of handling outbound prospect research, POV generation, and multi-persona sales contexts.
 
-The agent operates through Slack. Jay sends a message. The agent researches, reasons, drafts, and returns output. Nothing is sent to a prospect without Jay reviewing it first.
+The agent operates through Slack. Jay sends a message. The agent researches, reasons, drafts, and returns output. Nothing is sent to a prospect without the seller reviewing it first.
 
 ---
 
 ## What it does today
 
 - **Prospect research** — Exa AI semantic search, signal extraction (growth, tech, exec, competitive), structured prospect brief
+- **Signal quality framework puta the powet in the sellers hands to guide the agent towards high quality signals (timeliness, publication, financial data, exec quotation). 
 - **POV drafting** — builds Points of View grounded in Jay's methodology (soul.md §7), provocative question first, red team analysis included
 - **Outreach sequences** — subject line, intro email, follow-up using prospect's own vocabulary
 - **PDF generation** — research briefs and POVs exported as PDFs, sent directly in Slack
@@ -31,16 +32,15 @@ The agent operates through Slack. Jay sends a message. The agent researches, rea
 
 | VM | Role | IP | Model |
 |---|---|---|---|
-| VM100 | Personal Assistant (offline) | 192.168.0.100 | Qwen via Ollama |
-| VM101 | Ollama inference | 192.168.0.110 | qwen3:14b (CPU phase) |
-| VM102 | Sales Agent (OpenClaw) | 192.168.0.120 | Claude Sonnet 4.6 via API |
-| VM103 | OpenWebUI (temporary) | 192.168.0.232 | — |
+| VM101 | Ollama inference | qwen3:14b (CPU phase) |
+| VM102 | Sales Agent (OpenClaw) | Claude Sonnet 4.6 via API |
+| VM103 | OpenWebUI (temporary)
 
 **Host:** Proxmox VE 9.1 · MSI MAG B650 Tomahawk · Ryzen 7 8700G · 64GB DDR5 · Dual RTX 5070 Ti 16GB
 
 **VM102 key services:**
-- OpenClaw gateway: port 18789
-- Mission Control: port 18790
+- OpenClaw gateway
+- Mission Control
 - Docker Compose: `/opt/clawdbot/`
 - Mission Control: `/opt/mission-control/`
 
