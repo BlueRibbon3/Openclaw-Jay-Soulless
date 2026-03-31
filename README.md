@@ -18,7 +18,7 @@ The agent operates through Slack. Jay sends a message. The agent researches, rea
 ## What it does today
 
 - **Prospect research** — Exa AI semantic search, signal extraction (growth, tech, exec, competitive), structured prospect brief
-- **Signal quality framework puta the powet in the sellers hands to guide the agent towards high quality signals (timeliness, publication, financial data, exec quotation). 
+- **Signal quality framework** - puts the power in the sellers hands to guide the agent towards high quality signals (timeliness, publication, financial data, exec quotation). Signal cards produced from each run puts trust in the outputs and enables seller feedback. 
 - **POV drafting** — builds Points of View grounded in Jay's methodology (soul.md §7), provocative question first, red team analysis included
 - **Outreach sequences** — subject line, intro email, follow-up using prospect's own vocabulary
 - **PDF generation** — research briefs and POVs exported as PDFs, sent directly in Slack
