@@ -15,17 +15,49 @@
     --rust: #8b3a2a;
     --muted: #6b6858;
     --border: #d4cfc0;
+    --deep: #2a2a1e;
     --serif: 'Playfair Display', Georgia, serif;
     --sans: 'DM Sans', system-ui, sans-serif;
     --mono: 'DM Mono', monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; min-height: 100vh; overflow-x: hidden; }
-  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
   .wrap { position: relative; z-index: 1; }
 
+  /* Progress bar — subtle gold fill at very top */
+  #progress-bar-wrap {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: transparent;
+    z-index: 200;
+    display: none;
+  }
+  #progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    width: 0%;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0 2px 2px 0;
+  }
+
   /* Profile screen */
-  #screen-profile { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; }
+  #screen-profile {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
   .masthead { text-align: center; margin-bottom: 56px; }
   .masthead-rule { display: flex; align-items: center; gap: 16px; justify-content: center; margin-bottom: 20px; }
   .masthead-rule::before, .masthead-rule::after { content: ''; flex: 1; max-width: 80px; height: 1px; background: var(--gold); }
@@ -33,6 +65,7 @@
   .masthead h1 { font-family: var(--serif); font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 400; line-height: 1.1; margin-bottom: 16px; }
   .masthead h1 em { font-style: italic; color: var(--gold); }
   .masthead p { font-size: 1rem; color: var(--muted); max-width: 480px; margin: 0 auto; line-height: 1.7; }
+
   .profiles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; width: 100%; max-width: 900px; margin-bottom: 32px; }
   .profile-card { background: white; border: 1.5px solid var(--border); border-radius: 2px; padding: 28px 24px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
   .profile-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gold); transform: scaleX(0); transition: transform 0.2s; transform-origin: left; }
@@ -43,38 +76,146 @@
   .profile-role { font-family: var(--mono); font-size: 0.62rem; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
   .profile-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
   .profile-years { display: inline-block; margin-top: 14px; font-family: var(--mono); font-size: 0.62rem; color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 2px; }
+
   .start-btn { background: var(--ink); color: var(--paper); border: none; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 40px; cursor: pointer; transition: all 0.2s; border-radius: 2px; }
   .start-btn:hover { background: var(--gold); color: var(--ink); }
   .start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+  /* Artefact screen */
+  #screen-artefact {
+    display: none;
+    min-height: 100vh;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 80px 24px;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .artefact-label {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .artefact-heading {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .artefact-heading em { font-style: italic; color: var(--gold); }
+  .artefact-sub {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 520px;
+  }
+  .artefact-textarea-wrap {
+    position: relative;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: white;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+  .artefact-textarea-wrap:focus-within { border-color: var(--ink); }
+  .artefact-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 20px 24px;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: vertical;
+    line-height: 1.7;
+  }
+  .artefact-textarea::placeholder { color: var(--muted); font-style: italic; }
+  .artefact-hint {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 24px;
+  }
+  .artefact-actions { display: flex; gap: 12px; align-items: center; }
+  .skip-link {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+  .skip-link:hover { color: var(--ink); }
+
   /* Interview screen */
-  #screen-interview { display: none; min-height: 100vh; max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
-  .interview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 48px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-  .interview-title { font-family: var(--serif); font-size: 1.1rem; font-style: italic; color: var(--muted); }
-  .progress-track { display: flex; gap: 6px; }
-  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
-  .progress-dot.done { background: var(--gold); }
-  .progress-dot.active { background: var(--ink); }
+  #screen-interview { display: none; min-height: 100vh; max-width: 760px; margin: 0 auto; padding: 64px 24px 80px; }
   .chat-area { min-height: 320px; margin-bottom: 24px; }
   .message { margin-bottom: 20px; animation: fadeUp 0.3s ease; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .message-agent { display: flex; gap: 14px; align-items: flex-start; }
-  .agent-avatar { width: 32px; height: 32px; background: var(--ink); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 0.75rem; color: var(--gold); font-style: italic; margin-top: 2px; }
-  .message-bubble { background: white; border: 1px solid var(--border); border-radius: 2px 12px 12px 12px; padding: 16px 20px; font-size: 0.95rem; line-height: 1.7; max-width: 580px; }
+  .agent-avatar {
+    width: 32px; height: 32px;
+    background: var(--ink);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-style: italic;
+    margin-top: 2px;
+  }
+  .message-bubble {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 2px 12px 12px 12px;
+    padding: 16px 20px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    max-width: 580px;
+  }
   .message-user { display: flex; justify-content: flex-end; }
-  .message-user .message-bubble { background: var(--ink); color: var(--paper); border-color: var(--ink); border-radius: 12px 2px 12px 12px; font-weight: 300; }
+  .message-user .message-bubble {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+    border-radius: 12px 2px 12px 12px;
+    font-weight: 300;
+  }
+  .message-artefact .message-bubble {
+    background: #fffdf6;
+    border-color: var(--gold);
+    border-left: 3px solid var(--gold);
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: italic;
+    border-radius: 2px 12px 12px 12px;
+  }
   .typing-indicator { display: flex; gap: 4px; padding: 8px 4px; }
   .typing-dot { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: typing 1.2s infinite; }
   .typing-dot:nth-child(2) { animation-delay: 0.2s; }
   .typing-dot:nth-child(3) { animation-delay: 0.4s; }
   @keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-6px); opacity: 1; } }
 
-  /* Input */
   .input-area { position: relative; border: 1.5px solid var(--border); border-radius: 4px; background: white; transition: border-color 0.2s; }
   .input-area:focus-within { border-color: var(--ink); }
   .input-area.recording { border-color: var(--rust); }
-  textarea { width: 100%; min-height: 100px; padding: 16px 20px 48px; font-family: var(--sans); font-size: 0.95rem; font-weight: 300; color: var(--ink); background: transparent; border: none; outline: none; resize: none; line-height: 1.6; }
-  textarea::placeholder { color: var(--muted); }
+  textarea#user-input { width: 100%; min-height: 100px; padding: 16px 20px 48px; font-family: var(--sans); font-size: 0.95rem; font-weight: 300; color: var(--ink); background: transparent; border: none; outline: none; resize: none; line-height: 1.6; }
+  textarea#user-input::placeholder { color: var(--muted); }
   .input-footer { position: absolute; bottom: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--border); }
   .input-hint { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.06em; flex: 1; }
   .mic-btn { background: none; border: 1.5px solid var(--border); color: var(--muted); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 13px; flex-shrink: 0; }
@@ -91,60 +232,30 @@
   .output-header h2 { font-family: var(--serif); font-size: 2.4rem; font-weight: 400; margin-bottom: 8px; }
   .output-header p { color: var(--muted); font-size: 0.9rem; }
   .soul-output { background: white; border: 1px solid var(--border); border-radius: 4px; padding: 40px 48px; font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap; margin-bottom: 32px; }
-  .output-actions { display: flex; gap: 12px; justify-content: center; }
+  .output-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   .btn-outline { background: none; border: 1.5px solid var(--ink); color: var(--ink); font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 28px; cursor: pointer; border-radius: 2px; transition: all 0.15s; }
   .btn-outline:hover { background: var(--ink); color: var(--paper); }
   .btn-gold { background: var(--gold); border: none; color: var(--ink); font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 28px; cursor: pointer; border-radius: 2px; font-weight: 500; }
   .btn-gold:hover { background: var(--gold-light); }
-  .loading-bar { height: 2px; background: linear-gradient(90deg, var(--gold), var(--rust), var(--gold)); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 2px; margin-bottom: 24px; display: none; }
+  .shimmer-bar { height: 2px; background: linear-gradient(90deg, var(--gold), var(--rust), var(--gold)); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 2px; margin-bottom: 24px; display: none; }
   @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-  .split-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    align-items: start;
-    margin-bottom: 32px;
-  }
-
-  .split-panel { display: flex; flex-direction: column; gap: 12px; }
-
-  .split-label {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    color: var(--gold);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 500;
-  }
-
-  .split-chat {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 20px;
-    max-height: 70vh;
-    overflow-y: auto;
-    font-size: 0.85rem;
-    line-height: 1.65;
-  }
-
-  .split-chat .message { margin-bottom: 14px; }
-  .split-chat .message-agent .message-bubble { background: var(--cream); border: none; font-size: 0.83rem; color: var(--muted); }
-  .split-chat .message-user .message-bubble { background: var(--ink); color: var(--paper); font-size: 0.83rem; }
-
-  @media (max-width: 700px) {
-    .split-layout { grid-template-columns: 1fr; }
-  }
+  .shimmer-bar.active { display: block; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
+<!-- Ambient progress bar -->
+<div id="progress-bar-wrap">
+  <div id="progress-bar-fill"></div>
+</div>
+
+<!-- SCREEN 1: PROFILE -->
 <div id="screen-profile">
   <div class="masthead">
     <div class="masthead-rule"><span class="masthead-icon">◆ Soul Builder ◆</span></div>
     <h1>Who are you<br>as a <em>seller?</em></h1>
-    <p>A 60-minute interview that turns your experience, stories, and instincts into a personalised sales identity — the foundation your AI agent is built on.</p>
+    <p>A conversation that turns your experience, stories, and instincts into a personalised sales identity — the foundation your AI agent is built on.</p>
   </div>
   <div class="profiles-grid">
     <div class="profile-card" data-profile="charlie" onclick="selectProfile(this)">
@@ -172,25 +283,29 @@
       <div class="profile-years">10+ years</div>
     </div>
   </div>
-  <button class="start-btn" id="start-btn" disabled onclick="startInterview()">Begin Interview →</button>
+  <button class="start-btn" id="start-btn" disabled onclick="goToArtefact()">Continue →</button>
 </div>
 
-<div id="screen-interview">
-  <div class="interview-header">
-    <div class="interview-title" id="interview-section-label">Section 1 — Identity</div>
-    <div class="progress-track">
-      <div class="progress-dot active"></div>
-      <div class="progress-dot"></div>
-      <div class="progress-dot"></div>
-      <div class="progress-dot"></div>
-      <div class="progress-dot"></div>
-      <div class="progress-dot"></div>
-    </div>
+<!-- SCREEN 2: ARTEFACT -->
+<div id="screen-artefact">
+  <div class="artefact-label">◆ Before we begin</div>
+  <h2 class="artefact-heading">Show me something<br>you <em>actually sent.</em></h2>
+  <p class="artefact-sub">Paste a follow-up email or Slack message you're proud of — something that felt like you at your best. It doesn't need to be polished. It just needs to be real.<br><br>This gives the conversation a starting point in your actual voice, not a description of it.</p>
+  <div class="artefact-textarea-wrap">
+    <textarea class="artefact-textarea" id="artefact-input" placeholder="Paste your email or Slack message here..."></textarea>
   </div>
-  <div class="loading-bar" id="loading-bar"></div>
+  <div class="artefact-hint">Your message stays in this session only. It is never stored.</div>
+  <div class="artefact-actions">
+    <button class="start-btn" onclick="startInterview()">Start conversation →</button>
+    <button class="skip-link" onclick="startInterviewNoArtefact()">Skip — start without an example</button>
+  </div>
+</div>
+
+<!-- SCREEN 3: INTERVIEW -->
+<div id="screen-interview">
   <div class="chat-area" id="chat-area"></div>
   <div class="input-area" id="input-area">
-    <textarea id="user-input" placeholder="Speak or type your answer..." onkeydown="handleKey(event)"></textarea>
+    <textarea id="user-input" placeholder="Type your answer..." onkeydown="handleKey(event)"></textarea>
     <div class="input-footer">
       <span class="input-hint">🎤 tap mic to speak · Enter to send</span>
       <button class="mic-btn" id="mic-btn" onclick="toggleVoice()" title="Speak your answer">🎤</button>
@@ -199,61 +314,70 @@
   </div>
 </div>
 
+<!-- SCREEN 4: OUTPUT -->
 <div id="screen-output">
   <div class="output-header">
     <h2>Your Soul.md</h2>
-    <p>Your interview is on the left. Your identity document is on the right.</p>
+    <p>Review your seller identity document. Edit anything that doesn't sound like you.</p>
   </div>
-  <div class="loading-bar" id="output-loading-bar"></div>
-  <div class="split-layout">
-    <div class="split-panel">
-      <div class="split-label">Interview transcript</div>
-      <div class="split-chat" id="output-chat"></div>
-    </div>
-    <div class="split-panel">
-      <div class="split-label">Soul.md</div>
-      <div class="soul-output" id="soul-output"></div>
-      <div class="output-actions">
-        <button class="btn-outline" onclick="copyToClipboard()">Copy</button>
-        <button class="btn-outline" onclick="downloadSoul()">Download .md</button>
-        <button class="btn-gold" onclick="restartInterview()">Start over</button>
-      </div>
-    </div>
+  <div class="shimmer-bar" id="output-loading-bar"></div>
+  <div class="soul-output" id="soul-output"></div>
+  <div class="output-actions">
+    <button class="btn-outline" onclick="copyToClipboard()">Copy to clipboard</button>
+    <button class="btn-outline" onclick="downloadSoul()">Download .md</button>
+    <button class="btn-gold" onclick="restartInterview()">Start over</button>
   </div>
 </div>
 
 </div>
 <script>
-const SECTIONS = [
-  { label: 'Section 1 — Identity' },
-  { label: 'Section 2 — Opening' },
-  { label: 'Section 3 — Discovery' },
-  { label: 'Section 4 — Qualification' },
-  { label: 'Section 5 — Communication' },
-  { label: 'Section 6 — The POV' },
+// ── State ──────────────────────────────────────────────
+let selectedProfile = null;
+let conversationHistory = [];
+let artefactText = '';
+let totalTurns = 0;
+let interviewComplete = false;
+let recognition = null;
+let isListening = false;
+
+// Coverage tracking — areas we want to touch
+const COVERAGE_AREAS = [
+  'identity',       // who they are as a seller, what drives them
+  'opening',        // upfront contract, how they open
+  'discovery',      // question approach, L1/L2/L3
+  'qualification',  // disqualification, walk-away triggers
+  'communication',  // language discipline, translation instinct
+  'pov',            // point of view construction
+  'operating',      // weekly rhythm, between-meeting habits
+  'mindset',        // what they've changed their mind about, what they're working on
 ];
 
+// Approximate progress: 8 areas, ~3 turns each = ~24 turns for full coverage
+const EXPECTED_TURNS = 24;
+
+// ── Profile data ───────────────────────────────────────
 const PROFILE_CONTEXTS = {
-  charlie: "Early career seller (1-3 years). Building methodology. Ask foundational questions. Help them articulate instincts they have but haven't named. Encouraging but rigorous.",
-  dan: "Mid-career seller (3-7 years). Developing methodology. Probe for principles behind their habits. Push for specificity.",
-  cathy: "Consulting or advisory background (5-10 years). Strong on discovery and relationships, developing outbound motion. Probe how consultative instincts translate to sales.",
-  jay: "Senior seller (10+ years). Well-developed methodology needs codification. Ask for stories behind principles. Assume sophistication. Push for depth."
+  charlie: "Early career seller (1–3 years). Building methodology. Strong on activity, developing judgment. Help them name instincts they have but haven't articulated. Encouraging but rigorous. Don't assume sophistication — ask foundational questions and go from there.",
+  dan: "Mid-career seller (3–7 years). Developing methodology. Probe for principles behind their habits. Push for specificity and the story behind the rule.",
+  cathy: "Consulting or advisory background (5–10 years). Strong on discovery and relationships, developing outbound motion. Probe how consultative instincts translate to sales pressure and pipeline building.",
+  jay: "Senior seller (10+ years). Well-developed methodology that needs codification. Assume sophistication. Push for depth, the hard-won rules, and the stories behind the principles."
 };
 
 const OPENING_QUESTIONS = {
-  charlie: "Let's start with something concrete. Tell me about a sale you've made — even a small one — where you felt like you really understood what the customer needed before they told you. What happened?",
+  charlie: "Let's start somewhere concrete. Tell me about a sale you've made — even a small one — where you felt like you really understood what the customer needed before they told you. What happened?",
   dan: "Tell me about a deal you won that you're most proud of — not because of the size, but because of how you won it. What did you do that you wouldn't have done two years ago?",
   cathy: "Tell me about a time a customer told you something in a meeting that completely changed how you understood their problem. What did they say, and what did you do with it?",
   jay: "Tell me about a deal you won that you're most proud of — not because of the size, but because of how you won it. What did you see that others didn't?"
 };
 
-let selectedProfile = null;
-let conversationHistory = [];
-let currentSection = 0;
-let sectionTurns = 0;
-let recognition = null;
-let isListening = false;
+const ARTEFACT_OPENINGS = {
+  charlie: "Before anything else — I want to read something you actually sent. What I'm looking for is your real voice, not how you'd describe it.\n\nTell me about this message. What was the situation, and what were you trying to do?",
+  dan: "Before we get into the conversation — I've read what you sent. I want to make sure I understand the context before I reflect anything back.\n\nWhat was the situation here, and how did it land?",
+  cathy: "I've read your message. There's something in how you've written this that I want to come back to.\n\nFirst — tell me about the situation. Who was this person to you at this point in the relationship?",
+  jay: "I've read it. Before I say what I noticed — tell me about the context. Where were you in the deal, and what were you trying to accomplish with this message?"
+};
 
+// ── Profile selection ──────────────────────────────────
 function selectProfile(card) {
   document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
@@ -261,16 +385,59 @@ function selectProfile(card) {
   document.getElementById('start-btn').disabled = false;
 }
 
-function startInterview() {
+function goToArtefact() {
   document.getElementById('screen-profile').style.display = 'none';
+  document.getElementById('screen-artefact').style.display = 'flex';
+}
+
+// ── Start with artefact ────────────────────────────────
+function startInterview() {
+  artefactText = document.getElementById('artefact-input').value.trim();
+  document.getElementById('screen-artefact').style.display = 'none';
   document.getElementById('screen-interview').style.display = 'block';
-  updateProgress();
+  document.getElementById('progress-bar-wrap').style.display = 'block';
+  updateProgressBar();
+  initVoice();
+
+  if (artefactText) {
+    // Show artefact as a styled message
+    addArtefactMessage(artefactText);
+    // Opening question responds to the artefact
+    const opening = ARTEFACT_OPENINGS[selectedProfile];
+    addAgentMessage(opening);
+    conversationHistory.push({ role: 'assistant', content: opening });
+    // Include artefact in system context
+  } else {
+    // No artefact — go straight to opening question
+    const opening = OPENING_QUESTIONS[selectedProfile];
+    addAgentMessage(opening);
+    conversationHistory.push({ role: 'assistant', content: opening });
+  }
+}
+
+function startInterviewNoArtefact() {
+  artefactText = '';
+  document.getElementById('screen-artefact').style.display = 'none';
+  document.getElementById('screen-interview').style.display = 'block';
+  document.getElementById('progress-bar-wrap').style.display = 'block';
+  updateProgressBar();
+  initVoice();
   const opening = OPENING_QUESTIONS[selectedProfile];
   addAgentMessage(opening);
   conversationHistory.push({ role: 'assistant', content: opening });
-  initVoice();
 }
 
+// ── Progress bar ───────────────────────────────────────
+function updateProgressBar() {
+  const pct = Math.min((totalTurns / EXPECTED_TURNS) * 100, 95);
+  document.getElementById('progress-bar-fill').style.width = pct + '%';
+}
+
+function completeProgressBar() {
+  document.getElementById('progress-bar-fill').style.width = '100%';
+}
+
+// ── Voice ──────────────────────────────────────────────
 function initVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const btn = document.getElementById('mic-btn');
@@ -317,21 +484,23 @@ function toggleVoice() {
   else { document.getElementById('user-input').value = ''; recognition.start(); }
 }
 
-function updateProgress() {
-  document.querySelectorAll('.progress-dot').forEach((dot, i) => {
-    dot.classList.remove('active', 'done');
-    if (i < currentSection) dot.classList.add('done');
-    if (i === currentSection) dot.classList.add('active');
-  });
-  const label = SECTIONS[Math.min(currentSection, SECTIONS.length - 1)];
-  document.getElementById('interview-section-label').textContent = label.label;
-}
-
+// ── Messages ───────────────────────────────────────────
 function addAgentMessage(text) {
   const area = document.getElementById('chat-area');
   const msg = document.createElement('div');
   msg.className = 'message message-agent';
   msg.innerHTML = `<div class="agent-avatar">S</div><div class="message-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  area.appendChild(msg);
+  area.scrollTop = area.scrollHeight;
+}
+
+function addArtefactMessage(text) {
+  const area = document.getElementById('chat-area');
+  const msg = document.createElement('div');
+  msg.className = 'message message-artefact';
+  // Truncate display if very long
+  const display = text.length > 400 ? text.substring(0, 400) + '...' : text;
+  msg.innerHTML = `<div class="agent-avatar" style="background:#fffdf6;border:1px solid var(--gold);color:var(--gold);">✉</div><div class="message-bubble">${display.replace(/\n/g,'<br>')}</div>`;
   area.appendChild(msg);
   area.scrollTop = area.scrollHeight;
 }
@@ -364,6 +533,7 @@ function handleKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
+// ── Send message ───────────────────────────────────────
 async function sendMessage() {
   const input = document.getElementById('user-input');
   const text = input.value.trim();
@@ -373,11 +543,12 @@ async function sendMessage() {
   document.getElementById('send-btn').disabled = true;
   addUserMessage(text);
   conversationHistory.push({ role: 'user', content: text });
-  sectionTurns++;
+  totalTurns++;
+  updateProgressBar();
   showTyping();
-  document.getElementById('loading-bar').classList.add('active');
+
   try {
-    const res = await fetch('/.netlify/functions/chat', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -390,78 +561,104 @@ async function sendMessage() {
     const data = await res.json();
     const reply = data.content[0].text;
     removeTyping();
-    document.getElementById('loading-bar').classList.remove('active');
-    if (reply.includes('[SECTION_COMPLETE]')) {
-      const clean = reply.replace('[SECTION_COMPLETE]', '').trim();
-      addAgentMessage(clean);
-      conversationHistory.push({ role: 'assistant', content: clean });
-      currentSection++;
-      sectionTurns = 0;
-      if (currentSection < SECTIONS.length) updateProgress();
-      else await generateSoulMd();
-    } else if (reply.includes('[INTERVIEW_COMPLETE]')) {
+
+    if (reply.includes('[INTERVIEW_COMPLETE]')) {
       const clean = reply.replace('[INTERVIEW_COMPLETE]', '').trim();
       addAgentMessage(clean);
       conversationHistory.push({ role: 'assistant', content: clean });
-      await generateSoulMd();
+      completeProgressBar();
+      setTimeout(() => generateSoulMd(), 1800);
     } else {
       addAgentMessage(reply);
       conversationHistory.push({ role: 'assistant', content: reply });
     }
   } catch(e) {
     removeTyping();
-    document.getElementById('loading-bar').classList.remove('active');
     addAgentMessage('Something went wrong. Please try again.');
   }
+
   document.getElementById('send-btn').disabled = false;
   document.getElementById('user-input').focus();
 }
 
+// ── System prompt ──────────────────────────────────────
 function buildSystemPrompt() {
-  const section = SECTIONS[Math.min(currentSection, SECTIONS.length - 1)];
-  return `You are Soul Builder — an interviewer who helps sellers articulate their sales identity through conversation. Draw out stories, extract principles, play them back for confirmation.
+  const artefactSection = artefactText
+    ? `\n\nARTEFACT — the seller's own writing, submitted before the conversation began:\n"""\n${artefactText}\n"""\nYou have already acknowledged this. Use it as a voice anchor throughout — when you play back principles, echo the vocabulary and rhythm you observed in their writing. Return to it if relevant.`
+    : '';
+
+  return `You are Soul Builder — a thoughtful conversation partner helping sellers articulate their sales identity. Your job is to draw out stories, extract principles, and reflect them back. This is a conversation, not an interview. It should feel like talking to someone who is genuinely curious about how they work.
 
 PROFILE: ${PROFILE_CONTEXTS[selectedProfile]}
-CURRENT SECTION: ${section.label} · TURNS: ${sectionTurns}
+CONVERSATION TURN: ${totalTurns} of approximately ${EXPECTED_TURNS}${artefactSection}
 
-INTERVIEW RULES:
-- One question at a time. Never ask two questions in one message.
-- After a story: "What I'm hearing is that you [principle] — is that right?"
-- Push for specificity. Probe vague answers once before moving on.
-- 2-4 sentences max per response unless playing back.
-- Use the seller's language. Never introduce sales jargon or vendor names.
+CONVERSATION RULES:
+- One question or observation at a time. Never stack questions.
+- After a story, reflect the principle back: "What I'm hearing is that you [principle] — is that right?"
+- Follow threads. If something interesting surfaces, go there before moving on.
+- Be concise. 2–4 sentences unless playing back a principle.
+- Use their language. Mirror their vocabulary. Never introduce sales jargon.
 - Never tell them what good looks like — draw it out.
+- Probe vague answers once, then move on if they stay vague.
+- Vary your moves: sometimes ask for a story, sometimes a principle, sometimes a specific example, sometimes what they'd never do.
 
-SECTION FOCUS:
-1 Identity: Core selling identity, what drives them, a defining story.
-2 Opening: Their word-for-word first-call approach, upfront contract.
-3 Discovery: How they find the real problem, question approach, L1/L2/L3.
-4 Qualification: How they protect their time, walk-away triggers.
-5 Communication: Language discipline, translation instinct, what they never do.
-6 POV: How they build a point of view, what makes it land.
+AREAS TO COVER — work through these naturally across the conversation, not in order:
+1. Identity — who they are as a seller, what drives them, a defining win or loss
+2. Opening — how they set up a first conversation, what they commit to, what they expect
+3. Discovery — how they find the real problem, how deep they go, what they listen for
+4. Qualification — how they protect their time, what makes them walk away
+5. Communication — how they make things land, what they never say, how they adapt
+6. POV — how they build a perspective, what makes it earn attention
+7. Operating rhythm — how they structure their time, what they do between meetings that others don't
+8. Mindset — what they've changed their mind about, what they're still figuring out
 
-TRANSITIONS: After 3-4 meaningful exchanges, append [SECTION_COMPLETE] at the very end of your message and open the next section.
-After section 6, append [INTERVIEW_COMPLETE] at the very end.`;
+PACING:
+- Turns 1–6: warm up, identity and opening, let them talk
+- Turns 7–14: go deeper — discovery, qualification, communication
+- Turns 15–20: POV, operating rhythm, mindset
+- Turns 21+: wrap threads, gather anything missing, move toward close
+
+CLOSING: When you have meaningful material across most areas and the conversation feels complete, close warmly and append [INTERVIEW_COMPLETE] at the very end of your message. Do not signal this before the message — just close naturally and append the tag.`;
 }
 
+// ── Generate soul.md ───────────────────────────────────
 async function generateSoulMd() {
   document.getElementById('screen-interview').style.display = 'none';
   document.getElementById('screen-output').style.display = 'block';
-
-  // Copy chat transcript to output panel
-  const chatSrc = document.getElementById('chat-area');
-  const chatDst = document.getElementById('output-chat');
-  chatDst.innerHTML = chatSrc.innerHTML;
-
+  document.getElementById('progress-bar-wrap').style.display = 'none';
   document.getElementById('output-loading-bar').classList.add('active');
+
+  const artefactNote = artefactText
+    ? `\n\nThe seller also shared this piece of their own writing at the start of the conversation. Use it as a voice reference — the soul.md should feel like it was written by the same person:\n"""\n${artefactText}\n"""`
+    : '';
+
   try {
-    const res = await fetch('/.netlify/functions/chat', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `Generate a soul.md seller identity document from this interview. First person. Seller's own words. Six sections: Who I Am As a Seller, How I Open, How I Discover, How I Qualify, How I Communicate, How I Build a POV. Every principle must be traceable to something they said. No generic sales language. Under 600 words.`,
+        max_tokens: 1400,
+        system: `Generate a soul.md seller identity document from this conversation. This document will be loaded into an AI agent to shape how it thinks, communicates, and sells on behalf of this person.
+
+Structure:
+## Who I Am As a Seller
+## How I Open
+## How I Discover
+## How I Qualify
+## How I Communicate
+## How I Build a POV
+## How I Operate
+## What I'm Still Figuring Out
+
+Rules:
+- First person throughout. Written in the seller's own voice.
+- Every principle must be traceable to something they said — nothing invented, nothing generic.
+- Use their vocabulary and rhythm, not sales textbook language.
+- Specific over general. Concrete over abstract.
+- Where they gave a word-for-word example, include it.
+- The final section (What I'm Still Figuring Out) should feel honest and human — not a weakness, a sign of someone who thinks carefully about their craft.
+- Target 650–800 words. Dense with real content, no filler.${artefactNote}`,
         messages: [...conversationHistory, { role: 'user', content: 'Generate my soul.md now.' }]
       })
     });
@@ -474,6 +671,7 @@ async function generateSoulMd() {
   }
 }
 
+// ── Output actions ─────────────────────────────────────
 function copyToClipboard() {
   navigator.clipboard.writeText(document.getElementById('soul-output').textContent).then(() => {
     const btn = event.target;
@@ -487,21 +685,28 @@ function downloadSoul() {
   const blob = new Blob([document.getElementById('soul-output').textContent], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'soul.md'; a.click();
+  a.href = url;
+  a.download = 'soul.md';
+  a.click();
   URL.revokeObjectURL(url);
 }
 
 function restartInterview() {
   selectedProfile = null;
   conversationHistory = [];
-  currentSection = 0;
-  sectionTurns = 0;
+  artefactText = '';
+  totalTurns = 0;
+  interviewComplete = false;
   recognition = null;
   isListening = false;
   document.getElementById('chat-area').innerHTML = '';
-  document.getElementById('output-chat').innerHTML = '';
   document.getElementById('soul-output').textContent = '';
+  document.getElementById('artefact-input').value = '';
   document.getElementById('screen-output').style.display = 'none';
+  document.getElementById('screen-artefact').style.display = 'none';
+  document.getElementById('screen-interview').style.display = 'none';
+  document.getElementById('progress-bar-wrap').style.display = 'none';
+  document.getElementById('progress-bar-fill').style.width = '0%';
   document.getElementById('screen-profile').style.display = 'flex';
   document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('start-btn').disabled = true;
